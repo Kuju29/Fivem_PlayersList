@@ -34,6 +34,7 @@
 
   const prefix = config.PREFIX;
   const PERMISSION = config.PERMISSION;
+  const NAMELIST = config.NAMELIST;
   const SERVER_NAME = config.SERVER_NAME;
   const BOT_TOKEN = config.BOT_TOKEN;
   const URL_SERVER = 'http://' + config.URL_SERVER;
@@ -94,7 +95,7 @@
         let playersonline = (await getDynamic()).clients;
         let maxplayers = (await getDynamic()).sv_maxclients;
         let namef = players.filter(function(person) {
-        return person.name.toLowerCase().includes("police");
+        return person.name.toLowerCase().includes(NAMELIST);
         });
                 
         if (playersonline === 0) {
