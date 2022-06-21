@@ -103,11 +103,11 @@
           console.log(`Wait for Connect update at actiVity`);
         } else if (playersonline >= 1) {
           bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length}`,{'type':'WATCHING'});
-          console.log(`${playersonline} update at actiVity`);
+          console.log(`Update ${playersonline} at actiVity`);
         }
       } else {
         bot.user.setActivity(`🔴 Offline`,{'type':'WATCHING'});
-        console.log(`offline at actiVity`);
+        console.log(`Offline at actiVity`);
       }
     }).catch ((err) =>{
         console.log(`Catch ERROR`+ err);
