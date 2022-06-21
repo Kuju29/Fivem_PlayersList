@@ -14,6 +14,8 @@
 - !help
 
 ### Example
-<kbd> ![image](https://user-images.githubusercontent.com/22098092/174884221-95ddac49-77cf-4878-9752-b3ae53edbb64.png)
+<kbd> ![image](https://user-images.githubusercontent.com/22098092/174884363-fcde4ec5-f9c0-47a9-b653-e2f94fcb6999.png)
   
 <kbd> ![image](https://user-images.githubusercontent.com/22098092/174883919-dfaecbe3-6ec6-4f47-853f-db2b47c692be.png)
+
+<kbd> ![image](https://user-images.githubusercontent.com/22098092/174884221-95ddac49-77cf-4878-9752-b3ae53edbb64.png)
