@@ -1,0 +1,7 @@
+- Install [Node](https://nodejs.org/en/)
+- Create [token bots](https://discord.com/developers/applications)
+- Setting `Applications` > `bot` > `enable: Privileged Gateway Intents` both functions
+- Downlonad [fivem-bots](https://github.com/Kuju29/fivem-bots/archive/refs/heads/main.zip)
+- Unzip the file
+- Edit file config.json
+- Start.bat
