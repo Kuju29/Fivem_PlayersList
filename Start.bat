@@ -8,9 +8,7 @@ CLS
 echo Starting
 if not exist node_modules (
 npm install
-npm start
 node ./index.js
 ) else (
-pnpm start
 node ./index.js
 )
