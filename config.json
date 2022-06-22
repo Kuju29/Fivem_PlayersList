@@ -3,6 +3,7 @@
     "SERVER_NAME": "Name server",
     "BOT_TOKEN": "OTYzODI1Njg2NTU1MDMzNjIx.Ylbung.g7b4sz7Lm3KfbK9fVgHTy_bs131",
     "PERMISSION": "MANAGE_MESSAGES",
+    "COLORBOX": "RED",
     "NAMELIST": "police",
     "UPDATE_TIME": "6000",
     "PREFIX": "!"
