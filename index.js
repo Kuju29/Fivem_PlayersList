@@ -114,6 +114,9 @@
     });
   };
 
+function chunkString(str, size) {
+   return str.match(new RegExp('.{1,' + size + '}', 'g'));
+}
 
 //  -------------------------
 
@@ -127,6 +130,7 @@
 //  -------------------------
 
   bot.on("messageCreate", async(message) =>{
+    getPlayers().then(async(players) => {
   if (message.author.bot || !message.guild) return;
     let args = message.content.toLowerCase().split(" ");
     let command = args.shift()
@@ -140,101 +144,91 @@
     > \`${prefix}clear\` - clear all message from bots`)
         .setTimestamp()
         .setColor(0x5865F2)
-        .setFooter(`Bot by Kuju29`)
+        .setFooter({ text: `Bot by Kuju29` })
       message.reply({ embeds: [embed]})
       console.log(`Completed ${prefix}help`);
   }
 
   if (command == prefix + 's') {
-    getPlayers().then(async(players) => {
       let text = message.content.toLowerCase().substr(3,20);
       let playerdata = players.filter(function(person) { return person.name.toLowerCase().includes(`${text}`) });
-      let result  = [];
+      let result1  = [];
       let index = 1;
       for (let player of playerdata) {
-        result.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
       };
+      const result = result1.join("\n").toString();
+      let embed = new Discord.MessageEmbed().setTimestamp();
       if (message.member.permissions.has(PERMISSION)) {
-          let search1 = new Discord.MessageEmbed()
-            .setColor("BLUE")
-            .setTitle(`Search player | ${SERVER_NAME}`)
-            .setDescription((result.length > 0 ? result : 'No Players').join("\n"))
-            .setTimestamp();
-          message.reply({ embeds: [search1] })
+            embed.setColor("BLUE")
+                 .setTitle(`Search player | ${SERVER_NAME}`)
+                 .setDescription(result.length > 0 ? result : 'No Players')
+          message.reply({ embeds: [embed] })
           console.log(`Completed ${prefix}s ${text}`);
       } else {
-          let noPerms1 =  new Discord.MessageEmbed()
-            .setColor(0x2894C2)
-            .setTitle(`Search player | Error`)
-            .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
-            .setTimestamp(new Date());
-          message.reply({ embeds: [noPerms1] })
+            embed.setColor(0x2894C2)
+                 .setTitle(`Search player | Error`)
+                 .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
+          message.reply({ embeds: [embed] })
           console.log(`Error ${prefix}s message`);
       }  
-    });
   }
 
   if (command == prefix + 'id') {
-    getPlayers().then(async(players) => {
       let num = message.content.match(/[0-9]/g).join('').valueOf();
       let playerdata = players.filter(players => players.id == num);
-      let result  = [];
+      let result1  = [];
       let index = 1;
       for (let player of playerdata) {
-        result.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
       };
+      const result = result1.join("\n").toString();
+      let embed = new Discord.MessageEmbed().setTimestamp();
       if (message.member.permissions.has(PERMISSION)) {
-          let id2 = new Discord.MessageEmbed()
-            .setColor("BLUE")
-            .setTitle(`Search player | ${SERVER_NAME}`)
-            .setDescription((result.length > 0 ? result : 'No Players').join("\n"))
-            .setTimestamp();
-          message.reply({ embeds: [id2] })
+            embed.setColor("BLUE")
+                 .setTitle(`Search player | ${SERVER_NAME}`)
+                 .setDescription(result.length > 0 ? result : 'No Players')
+          message.reply({ embeds: [embed] })
           console.log(`Completed ${prefix}id ${num}`);
       } else {
-          let noPerms2 =  new Discord.MessageEmbed()
-            .setColor(0x2894C2)
-            .setTitle(`Search player | Error`)
-            .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
-            .setTimestamp(new Date());
-          message.reply({ embeds: [noPerms2] })
+            embed.setColor(0x2894C2)
+                 .setTitle(`Search player | Error`)
+                 .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
+          message.reply({ embeds: [embed] })
           console.log(`Error ${prefix}id message`);
       }  
-    });
   }
 
   if (command == prefix + 'all') {
-    getPlayers().then(async(players) => {
       let result  = [];
       let index = 1;
       for (let player of players) {
         result.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
       };
-      let chunks = Discord.Util.splitMessage(result.join(""))
       if (message.member.permissions.has(PERMISSION)) {
+        let chunks = Discord.Util.splitMessage(result.join("\n"))
+        let embed = new Discord.MessageEmbed().setTitle(`All_players | ${SERVER_NAME}`);
         if (result.length > 1) {
-        let embed = new Discord.MessageEmbed();
-           chunks.map((chunk, i) => {
-              embed.setTitle(`All_players | ${SERVER_NAME}`)
+            chunks.map((chunk, i) => {
               embed.setDescription(chunk)
-              embed.setFooter(`Part ${i + 1} / ${chunks.length}`)
+                   .setFooter({ text: `Part ${i + 1} / ${chunks.length}` })
               message.channel.send({ embeds: [embed] })
               console.log(`Completed !all Part ${i + 1} / ${chunks.length}`);
             });
          } else {
-            message.reply({ content: embed.setDescription(result.length > 0 ? result: 'No Players') });  
+              embed.setDescription(result.length > 0 ? result: 'No Players')
+            message.reply({ embeds: [embed] });  
             console.log(`Completed ${prefix}all No Players`);
          }
       } else {
-          let noPerms2 = new Discord.MessageEmbed()
+          let embed = new Discord.MessageEmbed()
             .setColor(0x2894C2)
             .setTitle(`Search player | Error`)
             .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
             .setTimestamp(new Date());
-          message.reply({ embeds: [noPerms2] })
+          message.reply({ embeds: [embed] })
           console.log(`Error ${prefix}all`);
     }  
-    });
   }
 
   if (command == prefix + 'clear') {
@@ -247,7 +241,12 @@
         });
         console.log(`Completed ${prefix}Clear ${num}`);
   }
-
+  }).catch ((err) =>{
+    let embed = new Discord.MessageEmbed()
+      .setDescription('Error at messages')
+    message.reply({ embeds: [embed] })
+    console.log(`Catch ERROR`+ err);
+  });
   });
   
 //  -------------------------
