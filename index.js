@@ -34,6 +34,7 @@
 
   const prefix = config.PREFIX;
   const PERMISSION = config.PERMISSION;
+  const COLORBOX = config.COLORBOX;
   const NAMELIST = config.NAMELIST;
   const SERVER_NAME = config.SERVER_NAME;
   const BOT_TOKEN = config.BOT_TOKEN;
@@ -114,9 +115,13 @@
     });
   };
 
-function chunkString(str, size) {
-   return str.match(new RegExp('.{1,' + size + '}', 'g'));
-}
+  function splitChunks(sourceArray, chunkSize) {
+    let result = [];
+    for (var i = 0; i < sourceArray.length; i += chunkSize) {
+      result[i / chunkSize] = sourceArray.slice(i, i + chunkSize);
+    }
+    return result;
+  };
 
 //  -------------------------
 
@@ -143,8 +148,8 @@ function chunkString(str, size) {
     > \`${prefix}all\` - all players
     > \`${prefix}clear\` - clear all message from bots`)
         .setTimestamp()
-        .setColor(0x5865F2)
-        .setFooter({ text: `Bot by Kuju29` })
+        .setColor(COLORBOX)
+        .setFooter({ text: `by Kuju29` })
       message.reply({ embeds: [embed]})
       console.log(`Completed ${prefix}help`);
   }
@@ -160,13 +165,13 @@ function chunkString(str, size) {
       const result = result1.join("\n").toString();
       let embed = new Discord.MessageEmbed().setTimestamp();
       if (message.member.permissions.has(PERMISSION)) {
-            embed.setColor("BLUE")
+            embed.setColor(COLORBOX)
                  .setTitle(`Search player | ${SERVER_NAME}`)
                  .setDescription(result.length > 0 ? result : 'No Players')
           message.reply({ embeds: [embed] })
           console.log(`Completed ${prefix}s ${text}`);
       } else {
-            embed.setColor(0x2894C2)
+            embed.setColor(COLORBOX)
                  .setTitle(`Search player | Error`)
                  .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
           message.reply({ embeds: [embed] })
@@ -185,13 +190,13 @@ function chunkString(str, size) {
       const result = result1.join("\n").toString();
       let embed = new Discord.MessageEmbed().setTimestamp();
       if (message.member.permissions.has(PERMISSION)) {
-            embed.setColor("BLUE")
+            embed.setColor(COLORBOX)
                  .setTitle(`Search player | ${SERVER_NAME}`)
                  .setDescription(result.length > 0 ? result : 'No Players')
           message.reply({ embeds: [embed] })
           console.log(`Completed ${prefix}id ${num}`);
       } else {
-            embed.setColor(0x2894C2)
+            embed.setColor(COLORBOX)
                  .setTitle(`Search player | Error`)
                  .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
           message.reply({ embeds: [embed] })
@@ -200,29 +205,33 @@ function chunkString(str, size) {
   }
 
   if (command == prefix + 'all') {
-      let result  = [];
+      let result1  = [];
       let index = 1;
       for (let player of players) {
-        result.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
       };
       if (message.member.permissions.has(PERMISSION)) {
-        let chunks = Discord.Util.splitMessage(result.join("\n"))
+        const result = result1.join("\n").toString();
+        let chunks = splitChunks(result, 2000);
+        // let chunks = Discord.Util.splitMessage(result.join("\n"))
         let embed = new Discord.MessageEmbed().setTitle(`All_players | ${SERVER_NAME}`);
         if (result.length > 1) {
             chunks.map((chunk, i) => {
-              embed.setDescription(chunk)
+              embed.setColor(COLORBOX)
+                   .setDescription(chunk)
                    .setFooter({ text: `Part ${i + 1} / ${chunks.length}` })
               message.channel.send({ embeds: [embed] })
               console.log(`Completed !all Part ${i + 1} / ${chunks.length}`);
             });
          } else {
-              embed.setDescription(result.length > 0 ? result: 'No Players')
+              embed.setColor(COLORBOX)
+                   .setDescription(result.length > 0 ? result: 'No Players')
             message.reply({ embeds: [embed] });  
             console.log(`Completed ${prefix}all No Players`);
          }
       } else {
           let embed = new Discord.MessageEmbed()
-            .setColor(0x2894C2)
+            .setColor(COLORBOX)
             .setTitle(`Search player | Error`)
             .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
             .setTimestamp(new Date());
@@ -242,10 +251,7 @@ function chunkString(str, size) {
         console.log(`Completed ${prefix}Clear ${num}`);
   }
   }).catch ((err) =>{
-    let embed = new Discord.MessageEmbed()
-      .setDescription('Error at messages')
-    message.reply({ embeds: [embed] })
-    console.log(`Catch ERROR`+ err);
+    console.log(`Catch ERROR or Offline: `+ err);
   });
   });
   
