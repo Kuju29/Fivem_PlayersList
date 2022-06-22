@@ -1,4 +1,4 @@
-# Test version
+# Test version (Discord bots)
 
 ### Run:
 - Install [Node](https://nodejs.org/en/)
