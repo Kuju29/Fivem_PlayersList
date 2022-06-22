@@ -85,7 +85,7 @@
 
   console.log = function(data)
     {
-        var currentDate = new Date().toISOString().slice(11,-5);
+        var currentDate = '|' + new Date().toISOString().slice(11,-5) + '|';
         this.logCopy(currentDate, data);
     };
 
@@ -101,14 +101,14 @@
                 
         if (playersonline === 0) {
           bot.user.setActivity(`⚠ Wait for Connect`,{'type':'WATCHING'});
-          console.log(`Wait for Connect update at actiVity`);
+          console.log(`Wait for Connect update at activity`);
         } else if (playersonline >= 1) {
           bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length}`,{'type':'WATCHING'});
-          console.log(`Update ${playersonline} at actiVity`);
+          console.log(`Update ${playersonline} at activity`);
         }
       } else {
         bot.user.setActivity(`🔴 Offline`,{'type':'WATCHING'});
-        console.log(`Offline at actiVity`);
+        console.log(`Offline at activity`);
       }
     }).catch ((err) =>{
         console.log(`Catch ERROR`+ err);
