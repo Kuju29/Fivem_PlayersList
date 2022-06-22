@@ -123,6 +123,10 @@
     return result;
   };
 
+function partition(array, n) {
+  return array.length ? [array.splice(0, n)].concat(partition(array, n)) : [];
+}    
+
 //  -------------------------
 
   bot.on('ready', async () => {
@@ -157,7 +161,7 @@
   if (command == prefix + 's') {
       let text = message.content.toLowerCase().substr(3,20);
       let playerdata = players.filter(function(person) { return person.name.toLowerCase().includes(`${text}`) });
-      let result1  = [];
+      let result1 = [];
       let index = 1;
       for (let player of playerdata) {
         result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
@@ -182,7 +186,7 @@
   if (command == prefix + 'id') {
       let num = message.content.match(/[0-9]/g).join('').valueOf();
       let playerdata = players.filter(players => players.id == num);
-      let result1  = [];
+      let result1 = [];
       let index = 1;
       for (let player of playerdata) {
         result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
@@ -205,14 +209,13 @@
   }
 
   if (command == prefix + 'all') {
-      let result1  = [];
+      let result = [];
       let index = 1;
       for (let player of players) {
-        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+        result.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
       };
       if (message.member.permissions.has(PERMISSION)) {
-        const result = result1.join("\n").toString();
-        let chunks = splitChunks(result, 2000);
+        let chunks = splitChunks(result.join("\n").toString(), 2000);
         // let chunks = Discord.Util.splitMessage(result.join("\n"))
         let embed = new Discord.MessageEmbed().setTitle(`All_players | ${SERVER_NAME}`);
         if (result.length > 1) {
