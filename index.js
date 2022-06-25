@@ -1,4 +1,5 @@
   const config = require('./config.json');
+  const inFo = require('./server/info.js');
   const Discord = require("discord.js");
   const bot = new Discord.Client({
    intents : [
@@ -26,63 +27,16 @@
 
   });
 
-//  -------------------------
-
-  const fetch = require('@vercel/fetch')(require('node-fetch'));
-
-//  -------------------------
-
   const prefix = config.PREFIX;
   const PERMISSION = config.PERMISSION;
   const COLORBOX = config.COLORBOX;
   const NAMELIST = config.NAMELIST;
+  const NAMELISTENABLE = config.NAMELISTENABLE;
   const SERVER_NAME = config.SERVER_NAME;
   const BOT_TOKEN = config.BOT_TOKEN;
-  const URL_SERVER = 'http://' + config.URL_SERVER;
-  const URL_DYNAMIC = new URL('/dynamic.json', URL_SERVER).toString();
-  const URL_PLAYERS = new URL('/players.json', URL_SERVER).toString();
   const UPDATE_TIME = config.UPDATE_TIME;
 
-//  -------------------------
-
-  async function checkOnlineStatus() {
-
-    try {
-        const online = await fetch(URL_DYNAMIC);
-        return online.status >= 200 && online.status < 300;
-      } catch (err) {
-        return false;
-      }
-  };
-
-  async function getDynamic() {
-
-    const res = await fetch(URL_DYNAMIC);
-    const data = await res.json();
-
-    if (res.ok) {
-        return data;
-      } else {
-        return null;
-      }
-  };
-
-  async function getPlayers() {
-
-    const res = await fetch(URL_PLAYERS);
-    const data = await res.json();
-  
-    if (res.ok) {
-        return data;
-      } else {
-        return null;
-      }
-  };
-
-//  -------------------------
-
-  console.logCopy = console.log.bind(console);
-
+  console.logCopy = console.log.bind(console)
   console.log = function(data)
     {
         var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -91,11 +45,11 @@
     };
 
   const activity = async () => {
-    checkOnlineStatus().then(async(server) => {
+    inFo.checkOnlineStatus().then(async(server) => {
       if (server) {
-        let players = (await getPlayers());
-        let playersonline = (await getDynamic()).clients;
-        let maxplayers = (await getDynamic()).sv_maxclients;
+        let players = (await inFo.getPlayers());
+        let playersonline = (await inFo.getDynamic()).clients;
+        let maxplayers = (await inFo.getDynamic()).sv_maxclients;
         let namef = players.filter(function(person) {
         return person.name.toLowerCase().includes(NAMELIST);
         });
@@ -104,8 +58,13 @@
           bot.user.setActivity(`⚠ Wait for Connect`,{'type':'WATCHING'});
           console.log(`Wait for Connect update at activity`);
         } else if (playersonline >= 1) {
-          bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length}`,{'type':'WATCHING'});
-          console.log(`Update ${playersonline} at activity`);
+            if (NAMELISTENABLE) {
+              bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length}`,{'type':'WATCHING'});
+              console.log(`Update ${playersonline} at activity`);
+            } else {
+              bot.user.setActivity(`💨 ${playersonline}/${maxplayers}`,{'type':'WATCHING'});
+              console.log(`Update ${playersonline} at activity`);
+            }
         }
       } else {
         bot.user.setActivity(`🔴 Offline`,{'type':'WATCHING'});
@@ -116,17 +75,13 @@
     });
   };
 
-  function splitChunks(sourceArray, chunkSize) {
-    let result = [];
-    for (var i = 0; i < sourceArray.length; i += chunkSize) {
-      result[i / chunkSize] = sourceArray.slice(i, i + chunkSize);
-    }
-    return result;
-  };
-
-function partition(array, n) {
-  return array.length ? [array.splice(0, n)].concat(partition(array, n)) : [];
-}    
+function splitChunks(sourceArray, chunkSize) {
+  let result = [];
+  for (var i = 0; i < sourceArray.length; i += chunkSize) {
+    result[i / chunkSize] = sourceArray.slice(i, i + chunkSize);
+  }
+  return result;
+};   
 
 //  -------------------------
 
@@ -140,7 +95,7 @@ function partition(array, n) {
 //  -------------------------
 
   bot.on("messageCreate", async(message) =>{
-    getPlayers().then(async(players) => {
+    inFo.getPlayers().then(async(players) => {
   if (message.author.bot || !message.guild) return;
     let args = message.content.toLowerCase().split(" ");
     let command = args.shift()
