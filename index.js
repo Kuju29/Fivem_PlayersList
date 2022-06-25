@@ -85,7 +85,8 @@
 
   console.log = function(data)
     {
-        var currentDate = '|' + new Date().toISOString().slice(11,-5) + '|';
+        var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        var currentDate = '|' + new Date().toLocaleString({  timeZone: timezone }).slice(11,-3) + '|';
         this.logCopy(currentDate, data);
     };
 
