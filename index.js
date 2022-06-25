@@ -1,5 +1,3 @@
-  const config = require('./config.json');
-  const inFo = require('./server/info.js');
   const Discord = require("discord.js");
   const bot = new Discord.Client({
    intents : [
@@ -27,11 +25,15 @@
 
   });
 
+  const config = require('./config.json');
+  const inFo = require('./server/info.js');
+
   const prefix = config.PREFIX;
   const PERMISSION = config.PERMISSION;
   const COLORBOX = config.COLORBOX;
   const NAMELIST = config.NAMELIST;
   const NAMELISTENABLE = config.NAMELISTENABLE;
+  const AUTODELETE = config.AUTODELETE;
   const SERVER_NAME = config.SERVER_NAME;
   const BOT_TOKEN = config.BOT_TOKEN;
   const UPDATE_TIME = config.UPDATE_TIME;
@@ -110,8 +112,15 @@ function splitChunks(sourceArray, chunkSize) {
         .setTimestamp()
         .setColor(COLORBOX)
         .setFooter({ text: `by Kuju29` })
-      message.reply({ embeds: [embed]})
-      console.log(`Completed ${prefix}help`);
+      message.reply({ embeds: [embed]}).then((msg) =>{
+          console.log(`Completed ${prefix}help`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+              msg.delete();
+              console.log(`Auto delete message ${prefix}help`);
+              }
+            },10000);
+          });
   }
 
   if (command == prefix + 's') {
@@ -128,14 +137,28 @@ function splitChunks(sourceArray, chunkSize) {
             embed.setColor(COLORBOX)
                  .setTitle(`Search player | ${SERVER_NAME}`)
                  .setDescription(result.length > 0 ? result : 'No Players')
-          message.reply({ embeds: [embed] })
+          message.reply({ embeds: [embed] }).then((msg) =>{
           console.log(`Completed ${prefix}s ${text}`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+              msg.delete();
+              console.log(`Auto delete message ${prefix}s ${text}`);
+              }
+            },10000);
+          });
       } else {
             embed.setColor(COLORBOX)
                  .setTitle(`Search player | Error`)
                  .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
-          message.reply({ embeds: [embed] })
+          message.reply({ embeds: [embed] }).then((msg) =>{
           console.log(`Error ${prefix}s message`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+              msg.delete();
+              console.log(`Auto delete Error message ${prefix}s message`);
+              }
+            },10000);
+          });
       }  
   }
 
@@ -153,14 +176,28 @@ function splitChunks(sourceArray, chunkSize) {
             embed.setColor(COLORBOX)
                  .setTitle(`Search player | ${SERVER_NAME}`)
                  .setDescription(result.length > 0 ? result : 'No Players')
-          message.reply({ embeds: [embed] })
+          message.reply({ embeds: [embed] }).then((msg) =>{
           console.log(`Completed ${prefix}id ${num}`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+              msg.delete();
+              console.log(`Auto delete message ${prefix}id ${num}`);
+              }
+            },10000);
+          });
       } else {
             embed.setColor(COLORBOX)
                  .setTitle(`Search player | Error`)
                  .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
-          message.reply({ embeds: [embed] })
+          message.reply({ embeds: [embed] }).then((msg) =>{
           console.log(`Error ${prefix}id message`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+              msg.delete();
+              console.log(`Auto delete message Error ${prefix}id message`);
+              }
+            },10000);
+          });
       }  
   }
 
@@ -179,14 +216,28 @@ function splitChunks(sourceArray, chunkSize) {
               embed.setColor(COLORBOX)
                    .setDescription(chunk)
                    .setFooter({ text: `Part ${i + 1} / ${chunks.length}` })
-              message.channel.send({ embeds: [embed] })
-              console.log(`Completed !all Part ${i + 1} / ${chunks.length}`);
+              message.channel.send({ embeds: [embed] }).then((msg) =>{
+                  console.log(`Completed !all Part ${i + 1} / ${chunks.length}`);
+                  setTimeout(() =>{
+                      if (AUTODELETE){
+                          msg.delete();
+                          console.log(`Auto delete message !all Part ${i + 1} / ${chunks.length}`);
+                      }
+                      },50000);
+              });
             });
          } else {
-              embed.setColor(COLORBOX)
-                   .setDescription(result.length > 0 ? result: 'No Players')
-            message.reply({ embeds: [embed] });  
+            embed.setColor(COLORBOX)
+                 .setDescription(result.length > 0 ? result: 'No Players')
+            message.reply({ embeds: [embed] }).then((msg) =>{
             console.log(`Completed ${prefix}all No Players`);
+              setTimeout(() =>{
+                if (AUTODELETE){
+                msg.delete();
+                console.log(`Auto delete message ${prefix}all No Players`);
+                }
+              },10000);
+            }); 
          }
       } else {
           let embed = new Discord.MessageEmbed()
@@ -194,20 +245,26 @@ function splitChunks(sourceArray, chunkSize) {
             .setTitle(`Search player | Error`)
             .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
             .setTimestamp(new Date());
-          message.reply({ embeds: [embed] })
+          message.reply({ embeds: [embed] }).then((msg) =>{
           console.log(`Error ${prefix}all`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+              msg.delete();
+              console.log(`Auto delete message Error ${prefix}all`);
+              }
+            },10000);
+          });
     }  
   }
 
   if (command == prefix + 'clear') {
       let num = message.content.match(/[0-9]/g).join('').valueOf();
         const Channel = message.channel;
-        const Messages = await Channel.messages.fetch({limit: num});
-
-        Messages.forEach(message => {
-            if (message.author.bot) message.delete()
-        });
-        console.log(`Completed ${prefix}Clear ${num}`);
+          const Messages = await Channel.messages.fetch({limit: num});
+          Messages.forEach(message => {
+              if (message.author.bot) message.delete()
+          });
+          console.log(`Completed ${prefix}Clear ${num}`);
   }
   }).catch ((err) =>{
     console.log(`Catch ERROR or Offline: `+ err);
