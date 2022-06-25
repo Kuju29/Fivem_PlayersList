@@ -1,7 +1,7 @@
 {
-    "URL_SERVER": "147.50.229.99:30120",
+    "URL_SERVER": "0.0.0.0:30120",
     "SERVER_NAME": "Name server",
-    "BOT_TOKEN": "OTYzODI1Njg2NTU1MDMzNjIx.Ylbung.g7b4sz7Lm3KfbK9fVgHTy_bs73A",
+    "BOT_TOKEN": "",
     "PERMISSION": "MANAGE_MESSAGES",
     "COLORBOX": "RED",
     "NAMELIST": "police",
