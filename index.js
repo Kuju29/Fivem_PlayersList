@@ -218,6 +218,6 @@ function splitChunks(sourceArray, chunkSize) {
 
   bot.login(BOT_TOKEN).then(null).catch(() => {
     console.log('The token you provided is invalided. Please make sure you are using the correct one from https://discord.com/developers/applications!');
-    console.error(e);
+    console.error();
     process.exit(1);
   });
