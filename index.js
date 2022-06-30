@@ -97,6 +97,7 @@ function splitChunks(sourceArray, chunkSize) {
 //  -------------------------
 
   bot.on("messageCreate", async(message) =>{
+    if (!message.author.bot) {
     inFo.getPlayers().then(async(players) => {
   if (message.author.bot || !message.guild) return;
     let args = message.content.toLowerCase().split(" ");
@@ -269,6 +270,7 @@ function splitChunks(sourceArray, chunkSize) {
   }).catch ((err) =>{
     console.log(`Catch ERROR or Offline: `+ err);
   });
+  }
   });
   
 //  -------------------------
