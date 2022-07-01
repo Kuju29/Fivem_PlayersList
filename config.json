@@ -6,7 +6,7 @@
     "COLORBOX": "RED",
     "NAMELIST": "police",
     "NAMELISTENABLE": true,
-    "AUTODELETE": true,
+    "AUTODELETE": false,
     "UPDATE_TIME": "6000",
     "PREFIX": "!"
 }
