@@ -98,7 +98,7 @@ function splitChunks(sourceArray, chunkSize) {
 
   bot.on("messageCreate", async(message) =>{
     if (!message.author.bot) {
-    inFo.getPlayers().then(async(players) => {
+    
   if (message.author.bot || !message.guild) return;
     let args = message.content.toLowerCase().split(" ");
     let command = args.shift()
@@ -124,6 +124,7 @@ function splitChunks(sourceArray, chunkSize) {
           });
   }
 
+  inFo.getPlayers().then(async(players) => {
   if (command == prefix + 's') {
       let text = message.content.toLowerCase().substr(3,20);
       let playerdata = players.filter(function(person) { return person.name.toLowerCase().includes(`${text}`) });
@@ -227,7 +228,7 @@ function splitChunks(sourceArray, chunkSize) {
                       },50000);
               });
             });
-         } else {
+        } else {
             embed.setColor(COLORBOX)
                  .setDescription(result.length > 0 ? result: 'No Players')
             message.reply({ embeds: [embed] }).then((msg) =>{
@@ -257,8 +258,11 @@ function splitChunks(sourceArray, chunkSize) {
           });
     }  
   }
+  }).catch ((err) =>{
+    console.log(`Catch ERROR or Offline: `+ err);
+  });
 
-  if (command == prefix + 'clear') {
+  if (command == prefix + 'clear' && AUTODELETE == false) {
       let num = message.content.match(/[0-9]/g).join('').valueOf();
         const Channel = message.channel;
           const Messages = await Channel.messages.fetch({limit: num});
@@ -267,9 +271,6 @@ function splitChunks(sourceArray, chunkSize) {
           });
           console.log(`Completed ${prefix}Clear ${num}`);
   }
-  }).catch ((err) =>{
-    console.log(`Catch ERROR or Offline: `+ err);
-  });
   }
   });
   
