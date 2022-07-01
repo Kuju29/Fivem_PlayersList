@@ -42,7 +42,7 @@
   console.log = function(data)
     {
         var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        var currentDate = '|' + new Date().toLocaleString({  timeZone: timezone }).slice(11,-3) + '|';
+        var currentDate = '|' + new Date().toLocaleString({  timeZone: timezone }).slice(10,-3) + '|';
         this.logCopy(currentDate, data);
     };
 
