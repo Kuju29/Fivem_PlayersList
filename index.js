@@ -29,7 +29,7 @@
   const inFo = require('./server/info.js');
 
   const prefix = config.PREFIX;
-  const PERMISSION = config.PERMISSION;
+  const PERMISSION = 'MANAGE_MESSAGES';
   const COLORBOX = config.COLORBOX;
   const NAMELIST = config.NAMELIST;
   const NAMELISTENABLE = config.NAMELISTENABLE;
