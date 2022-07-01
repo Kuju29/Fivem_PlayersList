@@ -2,7 +2,6 @@
     "URL_SERVER": "0.0.0.0:30120",
     "SERVER_NAME": "Name server",
     "BOT_TOKEN": "",
-    "PERMISSION": "MANAGE_MESSAGES",
     "COLORBOX": "RED",
     "NAMELIST": "police",
     "NAMELISTENABLE": true,
