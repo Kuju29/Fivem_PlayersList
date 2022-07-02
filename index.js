@@ -261,25 +261,46 @@
 
   if (command == PREFIX + 'ip') {
     let text = message.content.toLowerCase().substr(4,24);
-    let testip = validateIpAndPort(message.content.toLowerCase().substr(4,24));
+    let testip = validateIpAndPort(text);
     const iNfo = new fivem.ApiFiveM(text);
-    iNfo.checkOnlineStatus().then(async(server) => {
-      if (testip) {
-      let infoplayers = (await iNfo.getDynamic());
-      let embed = new Discord.MessageEmbed()
-        .setColor(COLORBOX)
-        .setTitle(`Server: \`${text}\``)
-        .addField('**Server Status**', `\`\`\`✅Online\`\`\``, true)
-        .addField('**Online Players**', `\`\`\`${infoplayers.clients}/${infoplayers.sv_maxclients}\`\`\``, true)
-        .setTimestamp(new Date());
-      message.reply({ embeds: [embed] }).then((msg) =>{
-        console.log(`Completed ${PREFIX}ip ${text} online`);
+    if (testip) {
+      iNfo.checkOnlineStatus().then(async(server) => {
+        if (server) {
+          let infoplayers = (await iNfo.getDynamic());
+          let embed = new Discord.MessageEmbed()
+              .setColor(COLORBOX)
+              .setTitle(`Server: \`${text}\``)
+              .addField('**Server Status**', `\`\`\`✅Online\`\`\``, true)
+              .addField('**Online Players**', `\`\`\`${infoplayers.clients}/${infoplayers.sv_maxclients}\`\`\``, true)
+              .setTimestamp(new Date());
+          message.reply({ embeds: [embed] }).then((msg) =>{
+            console.log(`Completed ${PREFIX}ip ${text} online`);
             setTimeout(() =>{
               if (AUTODELETE){
                 msg.delete();
                 console.log(`Auto delete message ${PREFIX}ip ${text} online`);
               }
             },10000);
+          });
+        } else {
+          let embed = new Discord.MessageEmbed()
+              .setColor(COLORBOX)
+              .setTitle(`Server: \`${text}\``)
+              .addField('**Server Status**', `\`\`\`❌Offline or Invalid IP\`\`\``, true)
+              .addField('**Online Players**', `\`\`\`-/-\`\`\``, true)
+              .setTimestamp(new Date());
+          message.reply({ embeds: [embed] }).then((msg) =>{
+            console.log(`Completed ${PREFIX}ip ${text} offline`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+                msg.delete();
+                console.log(`Auto delete message ${PREFIX}ip ${text} offline`);
+              }
+            },10000);
+          });
+        }
+      }).catch ((err) =>{
+        console.log(`Catch ERROR or Offline: `+ err);
       });
     } else {
       let infoplayers = (await iNfo.getDynamic());
@@ -297,9 +318,6 @@
             },10000);
       });
     };
-  }).catch ((err) =>{
-      console.log(`Catch ERROR or Offline: `+ err);
-  });
   }
 
   if (command == PREFIX + 'clear' && AUTODELETE == false) {
