@@ -1,4 +1,5 @@
-# Test version (Discord bots)
+# fivem-bots-discord
+I will add custom commands in the future.
 
 ### Run:
 - Install [Node](https://nodejs.org/en/)
