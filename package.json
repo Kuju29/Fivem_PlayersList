@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "@vercel/fetch": "^6.2.0",
-    "discord.js": "^13.8.0"
+    "discord.js": "^13.8.1"
   }
 }
