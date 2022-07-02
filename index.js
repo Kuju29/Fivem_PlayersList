@@ -2,9 +2,9 @@
   const bot = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGES] });
 
   const config = require('./config.json');
-  const inFo = require('./server/info.js');
+  const fivem = require('./server/info.js');
 
-  const prefix = config.PREFIX;
+  const PREFIX = config.PREFIX;
   const PERMISSION = 'MANAGE_MESSAGES';
   const COLORBOX = config.COLORBOX;
   const NAMELIST = config.NAMELIST;
@@ -14,7 +14,9 @@
   const BOT_TOKEN = config.BOT_TOKEN;
   const UPDATE_TIME = config.UPDATE_TIME;
 
-  console.logCopy = console.log.bind(console)
+  const inFo = new fivem.ApiFiveM(config.URL_SERVER);
+
+  console.logCopy = console.log.bind(console);
   console.log = function(data)
     {
         var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -44,22 +46,38 @@
               console.log(`Update ${playersonline} at activity`);
             }
         }
+
       } else {
         bot.user.setActivity(`🔴 Offline`,{'type':'WATCHING'});
         console.log(`Offline at activity`);
       }
+
     }).catch ((err) =>{
         console.log(`Catch ERROR`+ err);
     });
   };
 
-function splitChunks(sourceArray, chunkSize) {
-  let result = [];
-  for (var i = 0; i < sourceArray.length; i += chunkSize) {
-    result[i / chunkSize] = sourceArray.slice(i, i + chunkSize);
+  function splitChunks(sourceArray, chunkSize) {
+    let result = [];
+    for (var i = 0; i < sourceArray.length; i += chunkSize) {
+      result[i / chunkSize] = sourceArray.slice(i, i + chunkSize);
+    }
+    return result;
+  };   
+
+  function validateIpAndPort(input) {
+    var parts = input.split(":");
+    var ip = parts[0].split(".");
+    var port = parts[1];
+    return validateNum(port, 1, 65535) && ip.length == 4 && ip.every(function (segment) {
+        return validateNum(segment, 0, 255);
+    });
   }
-  return result;
-};   
+
+  function validateNum(input, min, max) {
+    var num = +input;
+    return num >= min && num <= max && input === num.toString();
+  }
 
 //  -------------------------
 
@@ -70,6 +88,7 @@ function splitChunks(sourceArray, chunkSize) {
       }, UPDATE_TIME);
   });
 
+
 //  -------------------------
 
   bot.on("messageCreate", async(message) =>{
@@ -79,29 +98,30 @@ function splitChunks(sourceArray, chunkSize) {
     let args = message.content.toLowerCase().split(" ");
     let command = args.shift()
 
-  if (command == prefix + `help`) {
+  if (command == PREFIX + `help`) {
       let embed = new Discord.MessageEmbed()
         .setTitle(`Bot commands list`)
-        .setDescription(`> \`${prefix}s\` - name players
-    > \`${prefix}id\` - number id
-    > \`${prefix}all\` - all players
-    > \`${prefix}clear\` - clear all message from bots`)
+        .setDescription(`> \`${PREFIX}s <name players>\` - Search players by name.
+    > \`${PREFIX}id <number id>\` - Search players by number.
+    > \`${PREFIX}all\` - Show all players
+    > \`${PREFIX}ip <ip:port>\` - Shows status of a given server.
+    > \`${PREFIX}clear <number>\` - Clear all message from bots`)
         .setTimestamp()
         .setColor(COLORBOX)
-        .setFooter({ text: `by Kuju29` })
+        .setFooter({ text: `Github: Kuju29/fivem-bots-discord` })
       message.reply({ embeds: [embed]}).then((msg) =>{
-          console.log(`Completed ${prefix}help`);
+          console.log(`Completed ${PREFIX}help`);
             setTimeout(() =>{
               if (AUTODELETE){
               msg.delete();
-              console.log(`Auto delete message ${prefix}help`);
+              console.log(`Auto delete message ${PREFIX}help`);
               }
             },10000);
           });
   }
 
   inFo.getPlayers().then(async(players) => {
-  if (command == prefix + 's') {
+  if (command == PREFIX + 's') {
       let text = message.content.toLowerCase().substr(3,20);
       let playerdata = players.filter(function(person) { return person.name.toLowerCase().includes(`${text}`) });
       let result1 = [];
@@ -116,11 +136,11 @@ function splitChunks(sourceArray, chunkSize) {
                  .setTitle(`Search player | ${SERVER_NAME}`)
                  .setDescription(result.length > 0 ? result : 'No Players')
           message.reply({ embeds: [embed] }).then((msg) =>{
-          console.log(`Completed ${prefix}s ${text}`);
+          console.log(`Completed ${PREFIX}s ${text}`);
             setTimeout(() =>{
               if (AUTODELETE){
               msg.delete();
-              console.log(`Auto delete message ${prefix}s ${text}`);
+              console.log(`Auto delete message ${PREFIX}s ${text}`);
               }
             },10000);
           });
@@ -129,18 +149,18 @@ function splitChunks(sourceArray, chunkSize) {
                  .setTitle(`Search player | Error`)
                  .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
           message.reply({ embeds: [embed] }).then((msg) =>{
-          console.log(`Error ${prefix}s message`);
+          console.log(`Error ${PREFIX}s message`);
             setTimeout(() =>{
               if (AUTODELETE){
               msg.delete();
-              console.log(`Auto delete Error message ${prefix}s message`);
+              console.log(`Auto delete Error message ${PREFIX}s message`);
               }
             },10000);
           });
       }  
   }
 
-  if (command == prefix + 'id') {
+  if (command == PREFIX + 'id') {
       let num = message.content.match(/[0-9]/g).join('').valueOf();
       let playerdata = players.filter(players => players.id == num);
       let result1 = [];
@@ -155,11 +175,11 @@ function splitChunks(sourceArray, chunkSize) {
                  .setTitle(`Search player | ${SERVER_NAME}`)
                  .setDescription(result.length > 0 ? result : 'No Players')
           message.reply({ embeds: [embed] }).then((msg) =>{
-          console.log(`Completed ${prefix}id ${num}`);
+          console.log(`Completed ${PREFIX}id ${num}`);
             setTimeout(() =>{
               if (AUTODELETE){
               msg.delete();
-              console.log(`Auto delete message ${prefix}id ${num}`);
+              console.log(`Auto delete message ${PREFIX}id ${num}`);
               }
             },10000);
           });
@@ -168,18 +188,18 @@ function splitChunks(sourceArray, chunkSize) {
                  .setTitle(`Search player | Error`)
                  .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
           message.reply({ embeds: [embed] }).then((msg) =>{
-          console.log(`Error ${prefix}id message`);
+          console.log(`Error ${PREFIX}id message`);
             setTimeout(() =>{
               if (AUTODELETE){
               msg.delete();
-              console.log(`Auto delete message Error ${prefix}id message`);
+              console.log(`Auto delete message Error ${PREFIX}id message`);
               }
             },10000);
           });
       }  
   }
 
-  if (command == prefix + 'all') {
+  if (command == PREFIX + 'all') {
       let result = [];
       let index = 1;
       for (let player of players) {
@@ -197,22 +217,22 @@ function splitChunks(sourceArray, chunkSize) {
               message.channel.send({ embeds: [embed] }).then((msg) =>{
                   console.log(`Completed !all Part ${i + 1} / ${chunks.length}`);
                   setTimeout(() =>{
-                      if (AUTODELETE){
-                          msg.delete();
-                          console.log(`Auto delete message !all Part ${i + 1} / ${chunks.length}`);
-                      }
-                      },50000);
+                    if (AUTODELETE){
+                      msg.delete();
+                      console.log(`Auto delete message !all Part ${i + 1} / ${chunks.length}`);
+                    }
+                  },50000);
               });
             });
         } else {
             embed.setColor(COLORBOX)
                  .setDescription(result.length > 0 ? result: 'No Players')
             message.reply({ embeds: [embed] }).then((msg) =>{
-            console.log(`Completed ${prefix}all No Players`);
+            console.log(`Completed ${PREFIX}all No Players`);
               setTimeout(() =>{
                 if (AUTODELETE){
-                msg.delete();
-                console.log(`Auto delete message ${prefix}all No Players`);
+                  msg.delete();
+                  console.log(`Auto delete message ${PREFIX}all No Players`);
                 }
               },10000);
             }); 
@@ -224,28 +244,72 @@ function splitChunks(sourceArray, chunkSize) {
             .setDescription(`❌ You do not have the ${PERMISSION}, therefor you cannot run this command!`)
             .setTimestamp(new Date());
           message.reply({ embeds: [embed] }).then((msg) =>{
-          console.log(`Error ${prefix}all`);
-            setTimeout(() =>{
-              if (AUTODELETE){
-              msg.delete();
-              console.log(`Auto delete message Error ${prefix}all`);
-              }
-            },10000);
+            console.log(`Error ${PREFIX}all`);
+              setTimeout(() =>{
+                if (AUTODELETE){
+                  msg.delete();
+                  console.log(`Auto delete message Error ${PREFIX}all`);
+                }
+              },10000);
           });
     }  
   }
+
   }).catch ((err) =>{
     console.log(`Catch ERROR or Offline: `+ err);
   });
 
-  if (command == prefix + 'clear' && AUTODELETE == false) {
+  if (command == PREFIX + 'ip') {
+    let text = message.content.toLowerCase().substr(4,24);
+    let testip = validateIpAndPort(message.content.toLowerCase().substr(4,24));
+    const iNfo = new fivem.ApiFiveM(text);
+    iNfo.checkOnlineStatus().then(async(server) => {
+      if (testip) {
+      let infoplayers = (await iNfo.getDynamic());
+      let embed = new Discord.MessageEmbed()
+        .setColor(COLORBOX)
+        .setTitle(`Server: \`${text}\``)
+        .addField('**Server Status**', `\`\`\`✅Online\`\`\``, true)
+        .addField('**Online Players**', `\`\`\`${infoplayers.clients}/${infoplayers.sv_maxclients}\`\`\``, true)
+        .setTimestamp(new Date());
+      message.reply({ embeds: [embed] }).then((msg) =>{
+        console.log(`Completed ${PREFIX}ip ${text} online`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+                msg.delete();
+                console.log(`Auto delete message ${PREFIX}ip ${text} online`);
+              }
+            },10000);
+      });
+    } else {
+      let infoplayers = (await iNfo.getDynamic());
+      let embed = new Discord.MessageEmbed()
+        .setColor(COLORBOX)
+        .setTitle(`Are you sure the IP is correct? \`${text}\``)
+        .setTimestamp(new Date());
+      message.reply({ embeds: [embed] }).then((msg) =>{
+        console.log(`Completed ${PREFIX}ip Check IP: ${text}`);
+            setTimeout(() =>{
+              if (AUTODELETE){
+                msg.delete();
+                console.log(`Auto delete message ${PREFIX}ip Are you sure the IP is correct? ${text}`);
+              }
+            },10000);
+      });
+    };
+  }).catch ((err) =>{
+      console.log(`Catch ERROR or Offline: `+ err);
+  });
+  }
+
+  if (command == PREFIX + 'clear' && AUTODELETE == false) {
       let num = message.content.match(/[0-9]/g).join('').valueOf();
         const Channel = message.channel;
           const Messages = await Channel.messages.fetch({limit: num});
           Messages.forEach(message => {
               if (message.author.bot) message.delete()
           });
-          console.log(`Completed ${prefix}Clear ${num}`);
+          console.log(`Completed ${PREFIX}Clear ${num}`);
   }
   }
   });
