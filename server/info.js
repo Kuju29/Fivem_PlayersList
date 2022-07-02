@@ -1,23 +1,24 @@
-  const config = require('../config.json');
-  const fetch = require('@vercel/fetch')(require('node-fetch'));
+const fetch = require('@vercel/fetch')(require('node-fetch'));
 
-  const URL_SERVER = 'http://' + config.URL_SERVER;
-  const URL_DYNAMIC = new URL('/dynamic.json', URL_SERVER).toString();
-  const URL_PLAYERS = new URL('/players.json', URL_SERVER).toString();
+class ApiFiveM {
+    constructor(ip) {
+        if (!ip) throw Error('Please put "IP:Port"');
+        this.ip = ip;
+    }
 
-  async function checkOnlineStatus() {
+  async checkOnlineStatus() {
 
     try {
-        const online = await fetch(URL_DYNAMIC);
+        const online = await fetch(`http://${this.ip}/dynamic.json`);
         return online.status >= 200 && online.status < 300;
       } catch (err) {
         return false;
       }
   };
 
-  async function getDynamic() {
+  async getDynamic() {
 
-    const res = await fetch(URL_DYNAMIC);
+    const res = await fetch(`http://${this.ip}/dynamic.json`);
     const data = await res.json();
 
     if (res.ok) {
@@ -27,9 +28,9 @@
       }
   };
 
-  async function getPlayers() {
+  async getPlayers() {
 
-    const res = await fetch(URL_PLAYERS);
+    const res = await fetch(`http://${this.ip}/players.json`);
     const data = await res.json();
   
     if (res.ok) {
@@ -38,8 +39,6 @@
         return null;
       }
   };
+};
 
-
-  module.exports.checkOnlineStatus = checkOnlineStatus;
-  module.exports.getDynamic = getDynamic;
-  module.exports.getPlayers = getPlayers;
+module.exports.ApiFiveM = ApiFiveM;
