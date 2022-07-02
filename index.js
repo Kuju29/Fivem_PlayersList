@@ -303,10 +303,9 @@
         console.log(`Catch ERROR or Offline: `+ err);
       });
     } else {
-      let infoplayers = (await iNfo.getDynamic());
       let embed = new Discord.MessageEmbed()
         .setColor(COLORBOX)
-        .setTitle(`Are you sure the IP is correct? \`${text}\``)
+        .addField(`**Are you sure the IP is correct?**`, `\`${text}\``, true)
         .setTimestamp(new Date());
       message.reply({ embeds: [embed] }).then((msg) =>{
         console.log(`Completed ${PREFIX}ip Check IP: ${text}`);
