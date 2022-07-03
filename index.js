@@ -100,11 +100,12 @@ bot.on("messageCreate", async (message) => {
   if (command == PREFIX + `help`) {
     let embed = new Discord.MessageEmbed()
       .setTitle(`Bot commands list`)
-      .setDescription(`> \`${PREFIX}s <name players>\` - Search players by name.
-    > \`${PREFIX}id <number id>\` - Search players by number.
-    > \`${PREFIX}all\` - Show all players
-    > \`${PREFIX}ip <ip:port>\` - Shows status of a given server.
-    > \`${PREFIX}clear <number>\` - Clear all message from bots`)
+      .setDescription(`\`\`\`fix
+> ${PREFIX}s <name players> - Search players by name.
+> ${PREFIX}id <number id>   - Search players by number.
+> ${PREFIX}all              - Show all players.
+> ${PREFIX}ip <ip:port>     - Shows status of a given server.
+> ${PREFIX}clear <number>   - Clear all message from bots\`\`\``)
       .setTimestamp()
       .setColor(COLORBOX)
       .setFooter({ text: `Github: Kuju29/fivem-bots-discord` })
