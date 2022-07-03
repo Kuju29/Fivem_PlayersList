@@ -3,6 +3,7 @@ const bot = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord
 
 const config = require('./config.json');
 const fivem = require('./server/info.js');
+const { Pagination } = require("discordjs-button-embed-pagination");
 
 const PREFIX = config.PREFIX;
 const PERMISSION = 'MANAGE_MESSAGES';
@@ -210,20 +211,12 @@ bot.on("messageCreate", async (message) => {
         // let chunks = Discord.Util.splitMessage(result.join("\n"))
         let embed = new Discord.MessageEmbed().setTitle(`All_players | ${SERVER_NAME}`);
         if (result.length > 1) {
-          chunks.map((chunk, i) => {
-            embed.setColor(COLORBOX)
+          const embeds = chunks.map((chunk) => {
+            return new Discord.MessageEmbed()
+              .setColor(COLORBOX)
               .setDescription(chunk)
-              .setFooter({ text: `Part ${i + 1} / ${chunks.length}` })
-            message.channel.send({ embeds: [embed] }).then((msg) => {
-              console.log(`Completed !all Part ${i + 1} / ${chunks.length}`);
-              setTimeout(() => {
-                if (AUTODELETE) {
-                  msg.delete();
-                  console.log(`Auto delete message !all Part ${i + 1} / ${chunks.length}`);
-                }
-              }, 50000);
-            });
           });
+          await new Pagination(message.channel, embeds, "page").paginate();
         } else {
           embed.setColor(COLORBOX)
             .setDescription(result.length > 0 ? result : 'No Players')
