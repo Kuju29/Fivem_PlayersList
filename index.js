@@ -216,7 +216,8 @@ bot.on("messageCreate", async (message) => {
               .setColor(COLORBOX)
               .setDescription(chunk)
           });
-          await new Pagination(message.channel, embeds, "page").paginate();
+          await new Pagination(message.channel, embeds, "Part").paginate();
+          console.log(`Completed !all`);
         } else {
           embed.setColor(COLORBOX)
             .setDescription(result.length > 0 ? result : 'No Players')
