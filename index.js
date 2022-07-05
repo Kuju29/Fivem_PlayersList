@@ -91,7 +91,6 @@ bot.on('ready', async () => {
   }, UPDATE_TIME);
 });
 
-
 //  -------------------------
 
 bot.on("messageCreate", async (message) => {
@@ -131,7 +130,7 @@ bot.on("messageCreate", async (message) => {
   if (command == PREFIX + 'start') {
     console.log(`Completed ${PREFIX}start`);
     sTart = setInterval(async function () {
-      inFo.getPlayers().then(async (players) => {
+      inFo.checkOnlineStatus().then(async (server) => {
         if (server) {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
