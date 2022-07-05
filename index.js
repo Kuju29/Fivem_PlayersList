@@ -139,13 +139,14 @@ bot.on("messageCreate", async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Online** 🟢\nTag : `)
             .setTimestamp(new Date());
-          if (STATUS !== "Online") return message.channel.send({
-            embeds: [embed]
-          }).then((message) => {
-            STATUS = "Online";
-            console.log('Send Online message done');
-          });
-
+          setTimeout(function () {
+            if (STATUS !== "Online") return message.channel.send({
+              embeds: [embed]
+            }).then((message) => {
+              STATUS = "Online";
+              console.log('Send Online message done');
+            });
+          }, 2000);
         } else {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
@@ -153,12 +154,14 @@ bot.on("messageCreate", async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Offline** 🔴\nTag : `)
             .setTimestamp(new Date());
-          if (STATUS !== null) return message.channel.send({
-            embeds: [embed]
-          }).then((message) => {
-            STATUS = null;
-            console.log('Send Offline message done');
-          });
+          setTimeout(function () {
+            if (STATUS !== null) return message.channel.send({
+              embeds: [embed]
+            }).then((message) => {
+              STATUS = null;
+              console.log('Send Offline message done');
+            });
+          }, 2000);
         }
 
       }).catch((err) => {
@@ -168,13 +171,14 @@ bot.on("messageCreate", async (message) => {
           .setTitle(SERVER_NAME)
           .setDescription(`Server Status : **Offline** 🔴\nTag : `)
           .setTimestamp(new Date());
-        if (STATUS !== null) return message.channel.send({
-          embeds: [embed]
-        }).then((message) => {
-          STATUS = null;
-          console.log('Send Offline message done');
-        });
-
+        setTimeout(function () {
+          if (STATUS !== null) return message.channel.send({
+            embeds: [embed]
+          }).then((message) => {
+            STATUS = null;
+            console.log('Send Offline message done');
+          });
+        }, 2000);
       });
     }, UPDATE_TIME);
   }
