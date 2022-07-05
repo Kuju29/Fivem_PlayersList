@@ -14,6 +14,7 @@ const AUTODELETE = config.AUTODELETE;
 const SERVER_NAME = config.SERVER_NAME;
 const BOT_TOKEN = config.BOT_TOKEN;
 const UPDATE_TIME = config.UPDATE_TIME;
+const SERVER_LOGO = config.SERVER_LOGO;
 
 const inFo = new fivem.ApiFiveM(config.URL_SERVER);
 
@@ -106,6 +107,8 @@ bot.on("messageCreate", async (message) => {
 > ${PREFIX}id <number id>   - Search players by number.
 > ${PREFIX}all              - Show all players.
 > ${PREFIX}ip <ip:port>     - Shows status of a given server.
+> ${PREFIX}start            - Send status server to channel.
+> ${PREFIX}stop             - Stop send status server to channel.
 > ${PREFIX}clear <number>   - Clear all message from bots\`\`\``)
       .setTimestamp()
       .setColor(COLORBOX)
@@ -121,6 +124,66 @@ bot.on("messageCreate", async (message) => {
     });
   }
 
+  // ----------------------------------------------
+
+  if (command == PREFIX + 'start') {
+    console.log(`Completed ${PREFIX}start`);
+    sTart = setInterval(async function () {
+      inFo.getPlayers().then(async (players) => {
+        if (server) {
+          let embed = new Discord.MessageEmbed()
+            .setColor(COLORBOX)
+            .setThumbnail(SERVER_LOGO)
+            .setTitle(SERVER_NAME)
+            .setDescription(`Server Status : **Online** 🟢\nTag : `)
+            .setTimestamp(new Date());
+          if (MESSAGE !== "Online") return message.channel.send({
+            embeds: [embed]
+          }).then((message) => {
+            MESSAGE = "Online";
+            console.log('Send Online message done');
+          });
+
+        } else {
+          let embed = new Discord.MessageEmbed()
+            .setColor(COLORBOX)
+            .setThumbnail(SERVER_LOGO)
+            .setTitle(SERVER_NAME)
+            .setDescription(`Server Status : **Offline** 🔴\nTag : `)
+            .setTimestamp(new Date());
+          if (MESSAGE !== null) message.channel.send({
+            embeds: [embed]
+          }).then((message) => {
+            MESSAGE = null;
+            console.log('Send Offline message done');
+          });
+        }
+
+      }).catch((err) => {
+        let embed = new Discord.MessageEmbed()
+          .setColor(COLORBOX)
+          .setThumbnail(SERVER_LOGO)
+          .setTitle(SERVER_NAME)
+          .setDescription(`Server Status : **Offline** 🔴\nTag : `)
+          .setTimestamp(new Date());
+        if (MESSAGE !== null) message.channel.send({
+          embeds: [embed]
+        }).then((message) => {
+          MESSAGE = null;
+          console.log('Send Offline message done');
+        });
+
+      });
+    }, UPDATE_TIME);
+  }
+
+  if (command == PREFIX + 'stop') {
+    clearInterval(sTart);
+    console.log(`Completed ${PREFIX}stop`);
+  }
+
+  // ---------------------------------------------- 
+  
   inFo.getPlayers().then(async (players) => {
     if (command == PREFIX + 's') {
       let text = message.content.toLowerCase().substr(3, 20);
