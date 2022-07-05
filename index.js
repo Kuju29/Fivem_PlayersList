@@ -145,7 +145,10 @@ bot.on("messageCreate", async (message) => {
             STATUS = "Online";
             console.log('Send Online message done');
             await new Promise(resolve => setTimeout(resolve, 1500));
-          }).catch(console.error);
+          }).catch((err) => {
+          clearInterval(sTart);
+          console.log('catch error stop !start'+ err);
+        });
 
         } else {
           let embed = new Discord.MessageEmbed()
@@ -160,7 +163,10 @@ bot.on("messageCreate", async (message) => {
             STATUS = null;
             console.log('Send Offline message done');
             await new Promise(resolve => setTimeout(resolve, 1500));
-          }).catch(console.error);
+          }).catch((err) => {
+          clearInterval(sTart);
+          console.log('catch error stop !start'+ err);
+        });
         }
 
       }).catch((err) => {
@@ -176,7 +182,10 @@ bot.on("messageCreate", async (message) => {
           STATUS = null;
           console.log('Send Offline message done');
           await new Promise(resolve => setTimeout(resolve, 1500));
-        }).catch(console.error);
+        }).catch((err) => {
+          clearInterval(sTart);
+          console.log('catch error stop !start'+ err);
+        });
 
       });
     }, UPDATE_TIME);
@@ -391,9 +400,9 @@ bot.on("messageCreate", async (message) => {
     console.log(`Completed ${PREFIX}Clear ${num}`);
   }
   
-  if (command == PREFIX + 'stopbot'){
-    process.exit(0);
+  if (command == PREFIX + 'stopbot') {
     console.log(`${PREFIX}stopbot - the bot has been stopped.....`)
+    process.exit(0);
   }
 
 });
