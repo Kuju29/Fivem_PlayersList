@@ -18,6 +18,8 @@ const SERVER_LOGO = config.SERVER_LOGO;
 
 const inFo = new fivem.ApiFiveM(config.URL_SERVER);
 
+var STATUS;
+
 console.logCopy = console.log.bind(console);
 console.log = function (data) {
   var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -137,10 +139,10 @@ bot.on("messageCreate", async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Online** 🟢\nTag : `)
             .setTimestamp(new Date());
-          if (MESSAGE !== "Online") return message.channel.send({
+          if (STATUS !== "Online") return message.channel.send({
             embeds: [embed]
           }).then((message) => {
-            MESSAGE = "Online";
+            STATUS = "Online";
             console.log('Send Online message done');
           });
 
@@ -151,10 +153,10 @@ bot.on("messageCreate", async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Offline** 🔴\nTag : `)
             .setTimestamp(new Date());
-          if (MESSAGE !== null) message.channel.send({
+          if (STATUS !== null) return message.channel.send({
             embeds: [embed]
           }).then((message) => {
-            MESSAGE = null;
+            STATUS = null;
             console.log('Send Offline message done');
           });
         }
@@ -166,10 +168,10 @@ bot.on("messageCreate", async (message) => {
           .setTitle(SERVER_NAME)
           .setDescription(`Server Status : **Offline** 🔴\nTag : `)
           .setTimestamp(new Date());
-        if (MESSAGE !== null) message.channel.send({
+        if (STATUS !== null) return message.channel.send({
           embeds: [embed]
         }).then((message) => {
-          MESSAGE = null;
+          STATUS = null;
           console.log('Send Offline message done');
         });
 
