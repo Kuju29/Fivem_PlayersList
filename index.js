@@ -393,6 +393,7 @@ bot.on("messageCreate", async (message) => {
   
   if (command == PREFIX + 'stopbot'){
     process.exit(0);
+    console.log(`${PREFIX}stopbot - the bot has been stopped.....`)
   }
 
 });
