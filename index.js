@@ -110,6 +110,7 @@ bot.on("messageCreate", async (message) => {
 > ${PREFIX}ip <ip:port>     - Shows status of a given server.
 > ${PREFIX}start            - Send status server to channel.
 > ${PREFIX}stop             - Stop send status server to channel.
+> ${PREFIX}stopbot          - Used if your bot server doesn't have a manual stop system.
 > ${PREFIX}clear <number>   - Clear all message from bots\`\`\``)
       .setTimestamp()
       .setColor(COLORBOX)
@@ -385,6 +386,10 @@ bot.on("messageCreate", async (message) => {
       if (message.author.bot) message.delete()
     });
     console.log(`Completed ${PREFIX}Clear ${num}`);
+  }
+  
+  if (command == PREFIX + 'stopbot'){
+    process.exit(0);
   }
 
 });
