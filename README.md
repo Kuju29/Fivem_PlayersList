@@ -1,5 +1,5 @@
 # fivem-bots-discord
-I will add custom commands in the future.
+*If you use `!start` for notifications. The command should not be run more than once, as this will increase API requests. If you want to fix it should `!stop` before restarting. I'm working on a solution for this and other issues.*
 
 ### Run:
 - Install [Node](https://nodejs.org/en/)
