@@ -139,14 +139,14 @@ bot.on("messageCreate", async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Online** 🟢\nTag : `)
             .setTimestamp(new Date());
-          setTimeout(function () {
-            if (STATUS !== "Online") return message.channel.send({
-              embeds: [embed]
-            }).then((message) => {
-              STATUS = "Online";
-              console.log('Send Online message done');
-            });
-          }, 2000);
+          if (STATUS !== "Online") return message.channel.send({
+            embeds: [embed]
+          }).then(async (message) => {
+            STATUS = "Online";
+            console.log('Send Online message done');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          });
+
         } else {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
@@ -154,14 +154,13 @@ bot.on("messageCreate", async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Offline** 🔴\nTag : `)
             .setTimestamp(new Date());
-          setTimeout(function () {
-            if (STATUS !== null) return message.channel.send({
-              embeds: [embed]
-            }).then((message) => {
-              STATUS = null;
-              console.log('Send Offline message done');
-            });
-          }, 2000);
+          if (STATUS !== null) return message.channel.send({
+            embeds: [embed]
+          }).then(async (message) => {
+            STATUS = null;
+            console.log('Send Offline message done');
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          });
         }
 
       }).catch((err) => {
@@ -171,14 +170,14 @@ bot.on("messageCreate", async (message) => {
           .setTitle(SERVER_NAME)
           .setDescription(`Server Status : **Offline** 🔴\nTag : `)
           .setTimestamp(new Date());
-        setTimeout(function () {
-          if (STATUS !== null) return message.channel.send({
-            embeds: [embed]
-          }).then((message) => {
-            STATUS = null;
-            console.log('Send Offline message done');
-          });
-        }, 2000);
+        if (STATUS !== null) return message.channel.send({
+          embeds: [embed]
+        }).then(async (message) => {
+          STATUS = null;
+          console.log('Send Offline message done');
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        });
+
       });
     }, UPDATE_TIME);
   }
