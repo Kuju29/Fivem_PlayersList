@@ -1,6 +1,8 @@
 # fivem-bots-discord
 *If you use `!start` for notifications. The command should not be run more than once, as this will increase API requests. If you want to fix it should `!stop` before restarting. I'm working on a solution for this and other issues.*
 
+<kbd> ![image](https://user-images.githubusercontent.com/22098092/177432694-ee6d8b9a-284f-45dc-8417-d48ecc6d979e.png)
+
 ### Run:
 - Install [Node](https://nodejs.org/en/)
 - Create [token bots](https://discord.com/developers/applications)
