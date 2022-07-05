@@ -145,7 +145,7 @@ bot.on("messageCreate", async (message) => {
             STATUS = "Online";
             console.log('Send Online message done');
             await new Promise(resolve => setTimeout(resolve, 1500));
-          });
+          }).catch(console.error);
 
         } else {
           let embed = new Discord.MessageEmbed()
@@ -160,7 +160,7 @@ bot.on("messageCreate", async (message) => {
             STATUS = null;
             console.log('Send Offline message done');
             await new Promise(resolve => setTimeout(resolve, 1500));
-          });
+          }).catch(console.error);
         }
 
       }).catch((err) => {
@@ -176,7 +176,7 @@ bot.on("messageCreate", async (message) => {
           STATUS = null;
           console.log('Send Offline message done');
           await new Promise(resolve => setTimeout(resolve, 1500));
-        });
+        }).catch(console.error);
 
       });
     }, UPDATE_TIME);
