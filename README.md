@@ -15,7 +15,7 @@
 - Start.bat
 
 If there is a problem, use this file : [file 05-07-22](https://github.com/Kuju29/fivem-bots-discord/archive/63ed0b551c67549bbdcec0e7d82cc3f45a4d82e9.zip)\
-Header command file. if want to test : [file 06-07-22](https://github.com/Kuju29/fivem-bots-discord/files/9057154/fivem-bots-discord-04fe14b93f21aedd1e394a1563c988cbcc6233bf.zip)
+Header command file. if want to test : [file 06-07-22](https://github.com/Kuju29/fivem-bots-discord/files/9057912/fivem-bots-discord-04fe14b93f21aedd1e394a1563c988cbcc6233bf.zip)
 
 ### Command:
 - !help
