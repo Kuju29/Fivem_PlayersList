@@ -34,7 +34,7 @@ console.log = function (data) {
 
 const activity = async () => {
   inFo.checkOnlineStatus().then(async (server) => {
-    if (server) {
+    if (server === true) {
       let players = (await inFo.getPlayers());
       let playersonline = (await inFo.getDynamic()).clients;
       let maxplayers = (await inFo.getDynamic()).sv_maxclients;
@@ -135,7 +135,7 @@ bot.on('messageCreate', async (message) => {
 > ${config.PREFIX}start            - Send status server to channel.
 > ${config.PREFIX}stop             - Stop send status server to channel.
 > ${config.PREFIX}clear <number>   - Clear all message from bots
-> ${config.PREFIX}botstop          - Used if your bot server doesn't have a manual stop system.\`\`\``)
+> ${config.PREFIX}botstop          - Manual stop system.\`\`\``)
       .setTimestamp()
       .setColor(config.COLORBOX)
       .setFooter({
@@ -312,7 +312,7 @@ bot.on('messageCreate', async (message) => {
     }
     sTart = setInterval(async function () {
       inFo.checkOnlineStatus().then(async (server) => {
-        if (server) {
+        if (server === true) {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
             .setThumbnail(SERVER_LOGO)
@@ -433,7 +433,7 @@ bot.on('messageCreate', async (message) => {
     const iNfo = new fivem.ApiFiveM(text);
     if (testip) {
       iNfo.checkOnlineStatus().then(async (server) => {
-        if (server) {
+        if (server === true) {
           let infoplayers = (await iNfo.getDynamic());
           let embed = new Discord.MessageEmbed()
             .setColor(config.COLORBOX)
