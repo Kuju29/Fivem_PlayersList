@@ -14,6 +14,7 @@
 - Edit file config.json
 - Start.bat
 
+If there is a problem, use this file : [file 05-07-22](https://github.com/Kuju29/fivem-bots-discord/archive/63ed0b551c67549bbdcec0e7d82cc3f45a4d82e9.zip)
 
 ### Command:
 - !help
