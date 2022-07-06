@@ -16,7 +16,7 @@ class ApiFiveM {
   async checkOnlineStatus() {
 
     try {
-      const online = await fetch(`http://${this.ip}/dynamic.json`);
+      const online = await fetch(`http://${this.ip}/info.json`);
       return online.status >= 200 && online.status < 300;
     } catch (err) {
       return false;
