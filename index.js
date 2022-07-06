@@ -155,8 +155,6 @@ bot.on('messageCreate', async (message) => {
   }
 
   inFo.getPlayers().then(async (players) => {
-    let playersonline = (await inFo.getDynamic()).clients;
-    let maxplayers = (await inFo.getDynamic()).sv_maxclients;
 
     if (command == PREFIX + 's') {
       if (config.NCOMMAND) {
