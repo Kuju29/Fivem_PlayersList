@@ -34,7 +34,7 @@ console.log = function (data) {
 
 const activity = async () => {
   inFo.checkOnlineStatus().then(async (server) => {
-    if (server === true) {
+    if (server) {
       let players = (await inFo.getPlayers());
       let playersonline = (await inFo.getDynamic()).clients;
       let maxplayers = (await inFo.getDynamic()).sv_maxclients;
@@ -319,7 +319,7 @@ bot.on('messageCreate', async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Online** 🟢\nTag : `)
             .setTimestamp(new Date());
-          if (STATUS !== "Online") return setTimeout(() => {
+          if (STATUS !== "Online") return setTimeout(function () {
             message.channel.send({
               embeds: [embed]
             }).then((message) => {
@@ -337,7 +337,7 @@ bot.on('messageCreate', async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Offline** 🔴\nTag : `)
             .setTimestamp(new Date());
-          if (STATUS !== null) return setTimeout(() => {
+          if (STATUS !== null) return setTimeout(function () {
             message.channel.send({
               embeds: [embed]
             }).then(async (message) => {
@@ -356,7 +356,7 @@ bot.on('messageCreate', async (message) => {
           .setTitle(SERVER_NAME)
           .setDescription(`Server Status : **Offline** 🔴\nTag : `)
           .setTimestamp(new Date());
-        if (STATUS !== null) return setTimeout(() => {
+        if (STATUS !== null) return setTimeout(function () {
           message.channel.send({
             embeds: [embed]
           }).then(async (message) => {
@@ -433,7 +433,7 @@ bot.on('messageCreate', async (message) => {
     const iNfo = new fivem.ApiFiveM(text);
     if (testip) {
       iNfo.checkOnlineStatus().then(async (server) => {
-        if (server === true) {
+        if (server) {
           let infoplayers = (await iNfo.getDynamic());
           let embed = new Discord.MessageEmbed()
             .setColor(config.COLORBOX)
