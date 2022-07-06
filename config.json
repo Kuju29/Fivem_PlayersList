@@ -8,6 +8,6 @@
     "NAMELISTENABLE": true,
     "AUTODELETE": false,
     "NCOMMAND": false,
-    "UPDATE_TIME": "6000",
+    "UPDATE_TIME": "7000",
     "PREFIX": "!"
 }
