@@ -7,7 +7,7 @@
     "NAMELIST": "police",
     "NAMELISTENABLE": true,
     "AUTODELETE": false,
-    "NCOMMAND": true,
+    "NCOMMAND": false,
     "UPDATE_TIME": "6000",
     "PREFIX": "!"
 }
