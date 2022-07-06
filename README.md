@@ -18,6 +18,13 @@
 ### Command:
 - !help
 
+```js
+    "NAMELISTENABLE": true, // Enable count names from "NAMELIST"
+    "AUTODELETE": false, // Auto-delete message from a function
+    "NCOMMAND": false, // Notify a function with a message in Discord. `Completed !help`
+    "VfetchOrNfetch": false, // "True: @vercel/fetch, False: node-fetch" If your server is unstable, use True.
+```
+
 ### Example:
 <kbd> ![image](https://user-images.githubusercontent.com/22098092/174884363-fcde4ec5-f9c0-47a9-b653-e2f94fcb6999.png)
   
