@@ -8,6 +8,7 @@
     "NAMELISTENABLE": true,
     "AUTODELETE": false,
     "NCOMMAND": false,
+    "VfetchOrNfetch": false,
     "UPDATE_TIME": "7000",
     "PREFIX": "!"
 }
