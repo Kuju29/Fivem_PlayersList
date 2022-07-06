@@ -36,7 +36,7 @@ console.log = function (data) {
 
 const activity = async () => {
   inFo.checkOnlineStatus().then(async (server) => {
-    if (server) {
+    if (server !== false) {
       let players = (await inFo.getPlayers());
       let playersonline = (await inFo.getDynamic()).clients;
       let maxplayers = (await inFo.getDynamic()).sv_maxclients;
@@ -177,7 +177,7 @@ bot.on('messageCreate', async (message) => {
     }
     sTart = setInterval(async function () {
       inFo.checkOnlineStatus().then(async (server) => {
-        if (server === true) {
+        if (server !== false) {
           setTimeout(() => {
             let embed = new Discord.MessageEmbed()
               .setColor(COLORBOX)
@@ -431,7 +431,7 @@ bot.on('messageCreate', async (message) => {
     const iNfo = new fivem.ApiFiveM(text);
     if (testip) {
       iNfo.checkOnlineStatus().then(async (server) => {
-        if (server) {
+        if (server !== false) {
           let infoplayers = (await iNfo.getDynamic());
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
