@@ -1,11 +1,6 @@
-const config = require('../config.json');
-if (config.VfetchOrNfetch) {
-  fetch = require('@vercel/fetch')(require('node-fetch'));
-  console.log('Use: @vercel/fetch')
-} else {
-  fetch = require('node-fetch');
-  console.log('Use: node-fetch');
-}
+// const fetch = require('@vercel/fetch')(require('node-fetch'));
+const fetch = require('node-fetch');
+
 
 class ApiFiveM {
   constructor(ip) {
