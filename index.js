@@ -17,7 +17,6 @@ const NAMELIST = config.NAMELIST;
 const NAMELISTENABLE = config.NAMELISTENABLE;
 const AUTODELETE = config.AUTODELETE;
 const NCOMMAND = config.NCOMMAND;
-const VfetchOrNfetch = config.VfetchOrNfetch;
 const UPDATE_TIME = config.UPDATE_TIME;
 const PREFIX = config.PREFIX;
 
