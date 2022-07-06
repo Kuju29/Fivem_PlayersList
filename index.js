@@ -154,8 +154,7 @@ bot.on('messageCreate', async (message) => {
     });
   }
 
-  inFo.checkOnlineStatus().then(async (server) => {
-    let players = (await inFo.getPlayers());
+  inFo.getPlayers().then(async (players) => {
     let playersonline = (await inFo.getDynamic()).clients;
     let maxplayers = (await inFo.getDynamic()).sv_maxclients;
 
@@ -288,24 +287,31 @@ bot.on('messageCreate', async (message) => {
       }
     }
 
-    if (command == PREFIX + 'start') {
-      console.log(`Completed ${PREFIX}start`);
-      if (config.NCOMMAND) {
-        let embedss = new Discord.MessageEmbed()
-          .setColor(COLORBOX)
-          .setDescription(`Completed \`${PREFIX}start\``)
-        message.reply({
-          embeds: [embedss]
-        }).then((msg) => {
-          setTimeout(() => {
-            if (AUTODELETE) {
-              msg.delete();
-              console.log(`Delete notification message ${PREFIX}start`);
-            }
-          }, 5000);
-        });
-      }
-      sTart = setInterval(async function () {
+  }).catch((err) => {
+    console.log(`Catch ERROR` + err);
+  });
+
+  //  -------------------------
+
+  if (command == PREFIX + 'start') {
+    console.log(`Completed ${PREFIX}start`);
+    if (config.NCOMMAND) {
+      let embedss = new Discord.MessageEmbed()
+        .setColor(COLORBOX)
+        .setDescription(`Completed \`${PREFIX}start\``)
+      message.reply({
+        embeds: [embedss]
+      }).then((msg) => {
+        setTimeout(() => {
+          if (AUTODELETE) {
+            msg.delete();
+            console.log(`Delete notification message ${PREFIX}start`);
+          }
+        }, 5000);
+      });
+    }
+    sTart = setInterval(async function () {
+      inFo.checkOnlineStatus().then(async (server) => {
         if (server) {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
@@ -313,8 +319,8 @@ bot.on('messageCreate', async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Online** 🟢\nTag : `)
             .setTimestamp(new Date());
-          setTimeout(() => {
-            if (STATUS !== "Online") return message.channel.send({
+          if (STATUS !== "Online") return setTimeout(() => {
+            message.channel.send({
               embeds: [embed]
             }).then((message) => {
               STATUS = "Online";
@@ -323,7 +329,7 @@ bot.on('messageCreate', async (message) => {
               clearInterval(sTart);
               console.log('catch error stop !start' + err);
             });
-          }, 1500);
+          }, 2000);
         } else {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
@@ -331,8 +337,8 @@ bot.on('messageCreate', async (message) => {
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Offline** 🔴\nTag : `)
             .setTimestamp(new Date());
-          setTimeout(() => {
-            if (STATUS !== null) return message.channel.send({
+          if (STATUS !== null) return setTimeout(() => {
+            message.channel.send({
               embeds: [embed]
             }).then(async (message) => {
               STATUS = null;
@@ -341,16 +347,29 @@ bot.on('messageCreate', async (message) => {
               clearInterval(sTart);
               console.log('catch error stop !start' + err);
             });
-          }, 1500);
+          }, 2000);
         }
-      }, UPDATE_TIME);
-    }
-
-  }).catch((err) => {
-    console.log(`Catch ERROR` + err);
-  });
-
-//  -------------------------
+      }).catch((err) => {
+        let embed = new Discord.MessageEmbed()
+          .setColor(COLORBOX)
+          .setThumbnail(SERVER_LOGO)
+          .setTitle(SERVER_NAME)
+          .setDescription(`Server Status : **Offline** 🔴\nTag : `)
+          .setTimestamp(new Date());
+        if (STATUS !== null) return setTimeout(() => {
+          message.channel.send({
+            embeds: [embed]
+          }).then(async (message) => {
+            STATUS = null;
+            console.log('Send Offline message done');
+          }).catch((err) => {
+            clearInterval(sTart);
+            console.log('catch error stop !start' + err);
+          });
+        }, 2000);
+      });
+    }, UPDATE_TIME);
+  }
 
   if (command == PREFIX + 'stop') {
     clearInterval(sTart);
