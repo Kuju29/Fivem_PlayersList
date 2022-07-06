@@ -12,6 +12,7 @@ const {
 const SERVER_NAME = config.SERVER_NAME;
 const BOT_TOKEN = config.BOT_TOKEN;
 const SERVER_LOGO = config.SERVER_LOGO;
+const CHANNEL_ID = config.CHANNEL_ID;
 const COLORBOX = config.COLORBOX;
 const NAMELIST = config.NAMELIST;
 const NAMELISTENABLE = config.NAMELISTENABLE;
@@ -35,13 +36,32 @@ console.log = function (data) {
 
 const activity = async () => {
   inFo.checkOnlineStatus().then(async (server) => {
-    if (server !== false) {
+    let channel = bot.channels.cache.get(CHANNEL_ID);
+    if (server) {
       let players = (await inFo.getPlayers());
       let playersonline = (await inFo.getDynamic()).clients;
       let maxplayers = (await inFo.getDynamic()).sv_maxclients;
       let namef = players.filter(function (person) {
         return person.name.toLowerCase().includes(NAMELIST);
       });
+      if (STATUS !== "Online" && CHANNEL_ID !== "") {
+        setTimeout(() => {
+          let embed = new Discord.MessageEmbed()
+            .setColor(COLORBOX)
+            .setThumbnail(SERVER_LOGO)
+            .setTitle(SERVER_NAME)
+            .setDescription(`Server Status : **Online** 🟢\nTag : `)
+            .setTimestamp(new Date());
+          channel.send({
+            embeds: [embed]
+          }).then(async (message) => {
+            STATUS = "Online";
+            console.log('Send Online message done');
+          }).catch((err) => {
+            console.log('Check "your channel ID"' + err);
+          });
+        }, 2000);
+      }
 
       if (playersonline === 0) {
         bot.user.setActivity(`⚠ Wait for Connect`, {
@@ -67,6 +87,24 @@ const activity = async () => {
         'type': 'WATCHING'
       });
       console.log(`Offline at activity`);
+      if (STATUS !== null && CHANNEL_ID !== "") {
+        setTimeout(() => {
+          let embed = new Discord.MessageEmbed()
+            .setColor(COLORBOX)
+            .setThumbnail(SERVER_LOGO)
+            .setTitle(SERVER_NAME)
+            .setDescription(`Server Status : **Offline** 🔴\nTag : `)
+            .setTimestamp(new Date());
+          channel.send({
+            embeds: [embed]
+          }).then(async (message) => {
+            STATUS = null;
+            console.log('Send Offline message done');
+          }).catch((err) => {
+            console.log('Check "your channel ID"' + err);
+          });
+        }, 2000);
+      }
     }
 
   }).catch((err) => {
@@ -153,98 +191,6 @@ bot.on('messageCreate', async (message) => {
         }
       }, 10000);
     });
-  }
-
-  //  -------------------------
-
-  if (command == PREFIX + 'start') {
-    console.log(`Completed ${PREFIX}start`);
-    if (NCOMMAND) {
-      let embedss = new Discord.MessageEmbed()
-        .setColor(COLORBOX)
-        .setDescription(`Completed \`${PREFIX}start\``)
-      message.reply({
-        embeds: [embedss]
-      }).then((msg) => {
-        setTimeout(() => {
-          if (AUTODELETE) {
-            msg.delete();
-            console.log(`Delete notification message ${PREFIX}start`);
-          }
-        }, 5000);
-      });
-    }
-    sTart = setInterval(async function () {
-      inFo.checkOnlineStatus().then(async (server) => {
-        if (server !== false) {
-          setTimeout(() => {
-            let embed = new Discord.MessageEmbed()
-              .setColor(COLORBOX)
-              .setThumbnail(SERVER_LOGO)
-              .setTitle(SERVER_NAME)
-              .setDescription(`Server Status : **Online** 🟢\nTag : `)
-              .setTimestamp(new Date());
-            if (STATUS !== "Online") return message.channel.send({
-              embeds: [embed]
-            }).then((message) => {
-              STATUS = "Online";
-              console.log('Send Online message done');
-            }).catch((err) => {
-              clearInterval(sTart);
-              console.log('catch error stop !start' + err);
-            });
-          }, 2000);
-        } else {
-          setTimeout(() => {
-            let embed = new Discord.MessageEmbed()
-              .setColor(COLORBOX)
-              .setThumbnail(SERVER_LOGO)
-              .setTitle(SERVER_NAME)
-              .setDescription(`Server Status : **Offline** 🔴\nTag : `)
-              .setTimestamp(new Date());
-            if (STATUS !== null) return message.channel.send({
-              embeds: [embed]
-            }).then(async (message) => {
-              STATUS = null;
-              console.log('Send Offline message done');
-            });
-          }, 2000);
-        }
-      }).catch((err) => {
-        setTimeout(() => {
-          let embed = new Discord.MessageEmbed()
-            .setColor(COLORBOX)
-            .setThumbnail(SERVER_LOGO)
-            .setTitle(SERVER_NAME)
-            .setDescription(`Server Status : **Offline** 🔴\nTag : `)
-            .setTimestamp(new Date());
-          if (STATUS !== null) return message.channel.send({
-            embeds: [embed]
-          }).then(async (message) => {
-            STATUS = null;
-            console.log('Send Offline message done');
-          });
-        }, 2000);
-      });
-    }, UPDATE_TIME);
-  }
-
-  if (command == PREFIX + 'stop') {
-    clearInterval(sTart);
-    console.log(`Completed ${PREFIX}stop`);
-    if (NCOMMAND) {
-      let embedss = new Discord.MessageEmbed()
-        .setColor(COLORBOX)
-        .setDescription(`Completed \`${PREFIX}stop\``)
-      if (NCOMMAND) return message.reply({
-        embeds: [embedss]
-      }).then((msg) => {
-        setTimeout(() => {
-          msg.delete();
-          console.log(`Delete notification message ${PREFIX}stop`);
-        }, 5000);
-      });
-    }
   }
 
   //  -------------------------
