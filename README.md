@@ -23,7 +23,6 @@ If there is a problem, use this file : [file 05-07-22](https://github.com/Kuju29
     "NAMELISTENABLE": true, // Enable count names from "NAMELIST"
     "AUTODELETE": false, // Auto-delete message from a function
     "NCOMMAND": false, // Notify a function with a message in Discord. `Completed !help`
-    "VfetchOrNfetch": false, // "True: @vercel/fetch, False: node-fetch" If your server is unstable, use True.
 ```
 
 ### Example:
