@@ -9,15 +9,17 @@ const {
   Pagination
 } = require("discordjs-button-embed-pagination");
 
-const PREFIX = config.PREFIX;
+const SERVER_NAME = config.SERVER_NAME;
+const BOT_TOKEN = config.BOT_TOKEN;
+const SERVER_LOGO = config.SERVER_LOGO;
 const COLORBOX = config.COLORBOX;
 const NAMELIST = config.NAMELIST;
 const NAMELISTENABLE = config.NAMELISTENABLE;
-const SERVER_NAME = config.SERVER_NAME;
-const BOT_TOKEN = config.BOT_TOKEN;
-const UPDATE_TIME = config.UPDATE_TIME;
-const SERVER_LOGO = config.SERVER_LOGO;
 const AUTODELETE = config.AUTODELETE;
+const NCOMMAND = config.NCOMMAND;
+const VfetchOrNfetch = config.VfetchOrNfetch;
+const UPDATE_TIME = config.UPDATE_TIME;
+const PREFIX = config.PREFIX;
 
 const inFo = new fivem.ApiFiveM(config.URL_SERVER);
 
@@ -112,188 +114,53 @@ bot.on('messageCreate', async (message) => {
   let command = args.shift()
 
   if (command == PREFIX + 'help') {
-    if (config.NCOMMAND) {
+    if (NCOMMAND) {
       let embedss = new Discord.MessageEmbed()
-        .setColor(config.COLORBOX)
-        .setDescription(`Completed \`${config.PREFIX}help\``)
+        .setColor(COLORBOX)
+        .setDescription(`Completed \`${PREFIX}help\``)
       message.reply({
         embeds: [embedss]
       }).then((msg) => {
         setTimeout(() => {
           msg.delete();
-          console.log(`Delete notification message ${config.PREFIX}help`);
+          console.log(`Delete notification message ${PREFIX}help`);
         }, 5000);
       });
     }
     let embed = new Discord.MessageEmbed()
       .setTitle(`Bot commands list`)
       .setDescription(`\`\`\`fix
-> ${config.PREFIX}s <name players> - Search players by name.
-> ${config.PREFIX}id <number id>   - Search players by number.
-> ${config.PREFIX}all              - Show all players.
-> ${config.PREFIX}ip <ip:port>     - Shows status of a given server.
-> ${config.PREFIX}start            - Send status server to channel.
-> ${config.PREFIX}stop             - Stop send status server to channel.
-> ${config.PREFIX}clear <number>   - Clear all message from bots
-> ${config.PREFIX}botstop          - Manual stop system.\`\`\``)
+> ${PREFIX}s <name players> - Search players by name.
+> ${PREFIX}id <number id>   - Search players by number.
+> ${PREFIX}all              - Show all players.
+> ${PREFIX}ip <ip:port>     - Shows status of a given server.
+> ${PREFIX}start            - Send status server to channel.
+> ${PREFIX}stop             - Stop send status server to channel.
+> ${PREFIX}clear <number>   - Clear all message from bots
+> ${PREFIX}botstop          - Manual stop system.\`\`\``)
       .setTimestamp()
-      .setColor(config.COLORBOX)
+      .setColor(COLORBOX)
       .setFooter({
         text: `Github: Kuju29/fivem-bots-discord`
       })
     message.reply({
       embeds: [embed]
     }).then((msg) => {
-      console.log(`Completed ${config.PREFIX}help`);
+      console.log(`Completed ${PREFIX}help`);
       setTimeout(() => {
-        if (config.AUTODELETE) {
+        if (AUTODELETE) {
           msg.delete();
-          console.log(`Auto delete message ${config.PREFIX}help`);
+          console.log(`Auto delete message ${PREFIX}help`);
         }
       }, 10000);
     });
   }
 
-  inFo.getPlayers().then(async (players) => {
-
-    if (command == PREFIX + 's') {
-      if (config.NCOMMAND) {
-        let embedss = new Discord.MessageEmbed()
-          .setColor(config.COLORBOX)
-          .setDescription(`Completed \`${config.PREFIX}s\``)
-        message.reply({
-          embeds: [embedss]
-        }).then((msg) => {
-          setTimeout(() => {
-            msg.delete();
-            console.log(`Delete notification message ${config.PREFIX}s`);
-          }, 5000);
-        });
-      }
-      let text = message.content.toLowerCase().substr(3, 20);
-      let playerdata = players.filter(function (person) {
-        return person.name.toLowerCase().includes(`${text}`)
-      });
-      let result1 = [];
-      let index = 1;
-      for (let player of playerdata) {
-        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
-      };
-      const result = result1.join("\n").toString();
-      let embed = new Discord.MessageEmbed()
-        .setColor(config.COLORBOX)
-        .setTitle(`Search player | ${config.SERVER_NAME}`)
-        .setDescription(result.length > 0 ? result : 'No Players')
-        .setTimestamp();
-      message.reply({
-        embeds: [embed]
-      }).then((msg) => {
-        console.log(`Completed ${config.PREFIX}s ${text}`);
-        setTimeout(() => {
-          if (config.AUTODELETE) {
-            msg.delete();
-            console.log(`Auto delete message ${config.PREFIX}s ${text}`);
-          }
-        }, 10000);
-      });
-    }
-
-    if (command == PREFIX + 'id') {
-      if (config.NCOMMAND) {
-        let embedss = new Discord.MessageEmbed()
-          .setColor(config.COLORBOX)
-          .setDescription(`Completed \`${config.PREFIX}id\``)
-        message.reply({
-          embeds: [embedss]
-        }).then((msg) => {
-          setTimeout(() => {
-            msg.delete();
-            console.log(`Delete notification message ${config.PREFIX}id`);
-          }, 5000);
-        });
-      }
-      let num = message.content.match(/[0-9]/g).join('').valueOf();
-      let playerdata = players.filter(players => players.id == num);
-      let result1 = [];
-      let index = 1;
-      for (let player of playerdata) {
-        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
-      };
-      const result = result1.join("\n").toString();
-      let embed = new Discord.MessageEmbed()
-        .setColor(config.COLORBOX)
-        .setTitle(`Search player | ${config.SERVER_NAME}`)
-        .setDescription(result.length > 0 ? result : 'No Players')
-        .setTimestamp();
-      message.reply({
-        embeds: [embed]
-      }).then((msg) => {
-        console.log(`Completed ${config.PREFIX}id ${num}`);
-        setTimeout(() => {
-          if (config.AUTODELETE) {
-            msg.delete();
-            console.log(`Auto delete message ${config.PREFIX}id ${num}`);
-          }
-        }, 10000);
-      });
-    }
-
-    if (command == PREFIX + 'all') {
-      if (config.NCOMMAND) {
-        let embedss = new Discord.MessageEmbed()
-          .setColor(config.COLORBOX)
-          .setDescription(`Completed \`${config.PREFIX}all\``)
-        message.reply({
-          embeds: [embedss]
-        }).then((msg) => {
-          setTimeout(() => {
-            msg.delete();
-            console.log(`Delete notification message ${config.PREFIX}all`);
-          }, 5000);
-        });
-      }
-      let result = [];
-      let index = 1;
-      for (let player of players) {
-        result.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
-      };
-      let chunks = splitChunks(result.join("\n").toString(), 2000);
-      // let chunks = Discord.Util.splitMessage(result.join("\n"))
-      let embed = new Discord.MessageEmbed().setTitle(`All_players | ${config.SERVER_NAME}`);
-      if (result.length > 1) {
-        const embeds = chunks.map((chunk) => {
-          return new Discord.MessageEmbed()
-            .setColor(config.COLORBOX)
-            .setDescription(chunk)
-        });
-        await new Pagination(message.channel, embeds, "Part").paginate();
-        console.log(`Completed !all`);
-      } else {
-        embed.setColor(config.COLORBOX)
-          .setDescription(result.length > 0 ? result : 'No Players')
-        message.reply({
-          embeds: [embed]
-        }).then((msg) => {
-          console.log(`Completed ${config.PREFIX}all No Players`);
-          setTimeout(() => {
-            if (config.AUTODELETE) {
-              msg.delete();
-              console.log(`Auto delete message ${config.PREFIX}all No Players`);
-            }
-          }, 10000);
-        });
-      }
-    }
-
-  }).catch((err) => {
-    console.log(`Catch ERROR` + err);
-  });
-
   //  -------------------------
 
   if (command == PREFIX + 'start') {
     console.log(`Completed ${PREFIX}start`);
-    if (config.NCOMMAND) {
+    if (NCOMMAND) {
       let embedss = new Discord.MessageEmbed()
         .setColor(COLORBOX)
         .setDescription(`Completed \`${PREFIX}start\``)
@@ -311,14 +178,14 @@ bot.on('messageCreate', async (message) => {
     sTart = setInterval(async function () {
       inFo.checkOnlineStatus().then(async (server) => {
         if (server === true) {
-          let embed = new Discord.MessageEmbed()
-            .setColor(COLORBOX)
-            .setThumbnail(SERVER_LOGO)
-            .setTitle(SERVER_NAME)
-            .setDescription(`Server Status : **Online** 🟢\nTag : `)
-            .setTimestamp(new Date());
-          if (STATUS !== "Online") return setTimeout(function () {
-            message.channel.send({
+          setTimeout(() => {
+            let embed = new Discord.MessageEmbed()
+              .setColor(COLORBOX)
+              .setThumbnail(SERVER_LOGO)
+              .setTitle(SERVER_NAME)
+              .setDescription(`Server Status : **Online** 🟢\nTag : `)
+              .setTimestamp(new Date());
+            if (STATUS !== "Online") return message.channel.send({
               embeds: [embed]
             }).then((message) => {
               STATUS = "Online";
@@ -329,40 +196,34 @@ bot.on('messageCreate', async (message) => {
             });
           }, 2000);
         } else {
+          setTimeout(() => {
+            let embed = new Discord.MessageEmbed()
+              .setColor(COLORBOX)
+              .setThumbnail(SERVER_LOGO)
+              .setTitle(SERVER_NAME)
+              .setDescription(`Server Status : **Offline** 🔴\nTag : `)
+              .setTimestamp(new Date());
+            if (STATUS !== null) return message.channel.send({
+              embeds: [embed]
+            }).then(async (message) => {
+              STATUS = null;
+              console.log('Send Offline message done');
+            });
+          }, 2000);
+        }
+      }).catch((err) => {
+        setTimeout(() => {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
             .setThumbnail(SERVER_LOGO)
             .setTitle(SERVER_NAME)
             .setDescription(`Server Status : **Offline** 🔴\nTag : `)
             .setTimestamp(new Date());
-          if (STATUS !== null) return setTimeout(function () {
-            message.channel.send({
-              embeds: [embed]
-            }).then(async (message) => {
-              STATUS = null;
-              console.log('Send Offline message done');
-            }).catch((err) => {
-              clearInterval(sTart);
-              console.log('catch error stop !start' + err);
-            });
-          }, 2000);
-        }
-      }).catch((err) => {
-        let embed = new Discord.MessageEmbed()
-          .setColor(COLORBOX)
-          .setThumbnail(SERVER_LOGO)
-          .setTitle(SERVER_NAME)
-          .setDescription(`Server Status : **Offline** 🔴\nTag : `)
-          .setTimestamp(new Date());
-        if (STATUS !== null) return setTimeout(function () {
-          message.channel.send({
+          if (STATUS !== null) return message.channel.send({
             embeds: [embed]
           }).then(async (message) => {
             STATUS = null;
             console.log('Send Offline message done');
-          }).catch((err) => {
-            clearInterval(sTart);
-            console.log('catch error stop !start' + err);
           });
         }, 2000);
       });
@@ -372,11 +233,11 @@ bot.on('messageCreate', async (message) => {
   if (command == PREFIX + 'stop') {
     clearInterval(sTart);
     console.log(`Completed ${PREFIX}stop`);
-    if (config.NCOMMAND) {
+    if (NCOMMAND) {
       let embedss = new Discord.MessageEmbed()
         .setColor(COLORBOX)
         .setDescription(`Completed \`${PREFIX}stop\``)
-      if (config.NCOMMAND) return message.reply({
+      if (NCOMMAND) return message.reply({
         embeds: [embedss]
       }).then((msg) => {
         setTimeout(() => {
@@ -387,17 +248,156 @@ bot.on('messageCreate', async (message) => {
     }
   }
 
+  //  -------------------------
+
+  inFo.getPlayers().then(async (players) => {
+
+    if (command == PREFIX + 's') {
+      if (NCOMMAND) {
+        let embedss = new Discord.MessageEmbed()
+          .setColor(COLORBOX)
+          .setDescription(`Completed \`${PREFIX}s\``)
+        message.reply({
+          embeds: [embedss]
+        }).then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+            console.log(`Delete notification message ${PREFIX}s`);
+          }, 5000);
+        });
+      }
+      let text = message.content.toLowerCase().substr(3, 20);
+      let playerdata = players.filter(function (person) {
+        return person.name.toLowerCase().includes(`${text}`)
+      });
+      let result1 = [];
+      let index = 1;
+      for (let player of playerdata) {
+        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+      };
+      const result = result1.join("\n").toString();
+      let embed = new Discord.MessageEmbed()
+        .setColor(COLORBOX)
+        .setTitle(`Search player | ${SERVER_NAME}`)
+        .setDescription(result.length > 0 ? result : 'No Players')
+        .setTimestamp();
+      message.reply({
+        embeds: [embed]
+      }).then((msg) => {
+        console.log(`Completed ${PREFIX}s ${text}`);
+        setTimeout(() => {
+          if (AUTODELETE) {
+            msg.delete();
+            console.log(`Auto delete message ${PREFIX}s ${text}`);
+          }
+        }, 10000);
+      });
+    }
+
+    if (command == PREFIX + 'id') {
+      if (NCOMMAND) {
+        let embedss = new Discord.MessageEmbed()
+          .setColor(COLORBOX)
+          .setDescription(`Completed \`${PREFIX}id\``)
+        message.reply({
+          embeds: [embedss]
+        }).then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+            console.log(`Delete notification message ${PREFIX}id`);
+          }, 5000);
+        });
+      }
+      let num = message.content.match(/[0-9]/g).join('').valueOf();
+      let playerdata = players.filter(players => players.id == num);
+      let result1 = [];
+      let index = 1;
+      for (let player of playerdata) {
+        result1.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+      };
+      const result = result1.join("\n").toString();
+      let embed = new Discord.MessageEmbed()
+        .setColor(COLORBOX)
+        .setTitle(`Search player | ${SERVER_NAME}`)
+        .setDescription(result.length > 0 ? result : 'No Players')
+        .setTimestamp();
+      message.reply({
+        embeds: [embed]
+      }).then((msg) => {
+        console.log(`Completed ${PREFIX}id ${num}`);
+        setTimeout(() => {
+          if (AUTODELETE) {
+            msg.delete();
+            console.log(`Auto delete message ${PREFIX}id ${num}`);
+          }
+        }, 10000);
+      });
+    }
+
+    if (command == PREFIX + 'all') {
+      if (NCOMMAND) {
+        let embedss = new Discord.MessageEmbed()
+          .setColor(COLORBOX)
+          .setDescription(`Completed \`${PREFIX}all\``)
+        message.reply({
+          embeds: [embedss]
+        }).then((msg) => {
+          setTimeout(() => {
+            msg.delete();
+            console.log(`Delete notification message ${PREFIX}all`);
+          }, 5000);
+        });
+      }
+      let result = [];
+      let index = 1;
+      for (let player of players) {
+        result.push(`${index++}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+      };
+      let chunks = splitChunks(result.join("\n").toString(), 2000);
+      // let chunks = Discord.Util.splitMessage(result.join("\n"))
+      let embed = new Discord.MessageEmbed().setTitle(`All_players | ${SERVER_NAME}`);
+      if (result.length > 1) {
+        const embeds = chunks.map((chunk) => {
+          return new Discord.MessageEmbed()
+            .setColor(COLORBOX)
+            .setDescription(chunk)
+        });
+        await new Pagination(message.channel, embeds, "Part").paginate();
+        console.log(`Completed !all`);
+      } else {
+        embed.setColor(COLORBOX)
+          .setDescription(result.length > 0 ? result : 'No Players')
+        message.reply({
+          embeds: [embed]
+        }).then((msg) => {
+          console.log(`Completed ${PREFIX}all No Players`);
+          setTimeout(() => {
+            if (AUTODELETE) {
+              msg.delete();
+              console.log(`Auto delete message ${PREFIX}all No Players`);
+            }
+          }, 10000);
+        });
+      }
+    }
+
+  }).catch((err) => {
+    console.log(`Catch ERROR` + err);
+  });
+
+  //  -------------------------
+
   if (command == PREFIX + 'clear') {
-    if (config.NCOMMAND) {
+    if (NCOMMAND) {
       let embedss = new Discord.MessageEmbed()
-        .setColor(config.COLORBOX)
-        .setDescription(`Completed \`${config.PREFIX}clear\``)
+        .setColor(COLORBOX)
+        .setDescription(`Completed \`${PREFIX}clear\``)
       message.reply({
         embeds: [embedss]
       }).then((msg) => {
         setTimeout(() => {
           msg.delete();
-          console.log(`Delete notification message ${config.PREFIX}clear`);
+          console.log(`Delete notification message ${PREFIX}clear`);
         }, 5000);
       });
     }
@@ -409,20 +409,20 @@ bot.on('messageCreate', async (message) => {
     Messages.forEach(message => {
       if (message.author.bot) message.delete()
     });
-    console.log(`Completed ${config.PREFIX}Clear ${num}`);
+    console.log(`Completed ${PREFIX}Clear ${num}`);
   }
 
   if (command == PREFIX + 'ip') {
-    if (config.NCOMMAND) {
+    if (NCOMMAND) {
       let embedss = new Discord.MessageEmbed()
-        .setColor(config.COLORBOX)
-        .setDescription(`Completed \`${config.PREFIX}ip\``)
+        .setColor(COLORBOX)
+        .setDescription(`Completed \`${PREFIX}ip\``)
       message.reply({
         embeds: [embedss]
       }).then((msg) => {
         setTimeout(() => {
           msg.delete();
-          console.log(`Delete notification message ${config.PREFIX}ip`);
+          console.log(`Delete notification message ${PREFIX}ip`);
         }, 5000);
       });
     }
@@ -434,7 +434,7 @@ bot.on('messageCreate', async (message) => {
         if (server) {
           let infoplayers = (await iNfo.getDynamic());
           let embed = new Discord.MessageEmbed()
-            .setColor(config.COLORBOX)
+            .setColor(COLORBOX)
             .setTitle(`Server: \`${text}\``)
             .addField('**Server Status**', `\`\`\`✅Online\`\`\``, true)
             .addField('**Online Players**', `\`\`\`${infoplayers.clients}/${infoplayers.sv_maxclients}\`\`\``, true)
@@ -442,17 +442,17 @@ bot.on('messageCreate', async (message) => {
           message.reply({
             embeds: [embed]
           }).then((msg) => {
-            console.log(`Completed ${config.PREFIX}ip ${text} online`);
+            console.log(`Completed ${PREFIX}ip ${text} online`);
             setTimeout(() => {
-              if (config.AUTODELETE) {
+              if (AUTODELETE) {
                 msg.delete();
-                console.log(`Auto delete message ${config.PREFIX}ip ${text} online`);
+                console.log(`Auto delete message ${PREFIX}ip ${text} online`);
               }
             }, 10000);
           });
         } else {
           let embed = new Discord.MessageEmbed()
-            .setColor(config.COLORBOX)
+            .setColor(COLORBOX)
             .setTitle(`Server: \`${text}\``)
             .addField('**Server Status**', `\`\`\`❌Offline or Invalid IP\`\`\``, true)
             .addField('**Online Players**', `\`\`\`-/-\`\`\``, true)
@@ -460,11 +460,11 @@ bot.on('messageCreate', async (message) => {
           message.reply({
             embeds: [embed]
           }).then((msg) => {
-            console.log(`Completed ${config.PREFIX}ip ${text} offline`);
+            console.log(`Completed ${PREFIX}ip ${text} offline`);
             setTimeout(() => {
-              if (config.AUTODELETE) {
+              if (AUTODELETE) {
                 msg.delete();
-                console.log(`Auto delete message ${config.PREFIX}ip ${text} offline`);
+                console.log(`Auto delete message ${PREFIX}ip ${text} offline`);
               }
             }, 10000);
           });
@@ -474,17 +474,17 @@ bot.on('messageCreate', async (message) => {
       });
     } else {
       let embed = new Discord.MessageEmbed()
-        .setColor(config.COLORBOX)
+        .setColor(COLORBOX)
         .addField(`**Are you sure the IP is correct?**`, `\`${text}\``, true)
         .setTimestamp(new Date());
       message.reply({
         embeds: [embed]
       }).then((msg) => {
-        console.log(`Completed ${config.PREFIX}ip Check IP: ${text}`);
+        console.log(`Completed ${PREFIX}ip Check IP: ${text}`);
         setTimeout(() => {
-          if (config.AUTODELETE) {
+          if (AUTODELETE) {
             msg.delete();
-            console.log(`Auto delete message ${config.PREFIX}ip Are you sure the IP is correct? ${text}`);
+            console.log(`Auto delete message ${PREFIX}ip Are you sure the IP is correct? ${text}`);
           }
         }, 10000);
       });
@@ -492,7 +492,7 @@ bot.on('messageCreate', async (message) => {
   }
 
   if (command == PREFIX + 'botstop') {
-    console.log(`${config.PREFIX}stopbot - the bot has been stopped.....`);
+    console.log(`${PREFIX}stopbot - the bot has been stopped.....`);
     process.exit(0);
   }
 
