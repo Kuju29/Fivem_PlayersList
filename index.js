@@ -171,8 +171,6 @@ bot.on('messageCreate', async (message) => {
 > ${PREFIX}id <number id>   - Search players by number.
 > ${PREFIX}all              - Show all players.
 > ${PREFIX}ip <ip:port>     - Shows status of a given server.
-> ${PREFIX}start            - Send status server to channel.
-> ${PREFIX}stop             - Stop send status server to channel.
 > ${PREFIX}clear <number>   - Clear all message from bots
 > ${PREFIX}botstop          - Manual stop system.\`\`\``)
       .setTimestamp()
