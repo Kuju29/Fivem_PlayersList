@@ -45,7 +45,6 @@ const activity = async () => {
         return person.name.toLowerCase().includes(NAMELIST);
       });
       if (STATUS !== "Online" && CHANNEL_ID !== "") {
-        setTimeout(() => {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
             .setThumbnail(SERVER_LOGO)
@@ -60,7 +59,6 @@ const activity = async () => {
           }).catch((err) => {
             console.log('Check "your channel ID"' + err);
           });
-        }, 2000);
       }
 
       if (playersonline === 0) {
@@ -88,7 +86,6 @@ const activity = async () => {
       });
       console.log(`Offline at activity`);
       if (STATUS !== null && CHANNEL_ID !== "") {
-        setTimeout(() => {
           let embed = new Discord.MessageEmbed()
             .setColor(COLORBOX)
             .setThumbnail(SERVER_LOGO)
@@ -103,7 +100,6 @@ const activity = async () => {
           }).catch((err) => {
             console.log('Check "your channel ID"' + err);
           });
-        }, 2000);
       }
     }
 
