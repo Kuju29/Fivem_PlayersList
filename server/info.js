@@ -1,7 +1,6 @@
 // const fetch = require('@vercel/fetch')(require('node-fetch'));
 const fetch = require('node-fetch');
 
-
 class ApiFiveM {
   constructor(ip) {
     if (!ip) throw Error('Please put "IP:Port"');
@@ -11,7 +10,7 @@ class ApiFiveM {
   async checkOnlineStatus() {
 
     try {
-      const online = await fetch(`http://${this.ip}/info.json`);
+      const online = await fetch(`http://${this.ip}/dynamic.json`);
       return online.status >= 200 && online.status < 300;
     } catch (err) {
       return false;
@@ -33,6 +32,18 @@ class ApiFiveM {
   async getPlayers() {
 
     const res = await fetch(`http://${this.ip}/players.json`);
+    const data = await res.json();
+
+    if (res.ok) {
+      return data;
+    } else {
+      return null;
+    }
+  };
+
+  async getInfo() {
+
+    const res = await fetch(`http://${this.ip}/info.json`);
     const data = await res.json();
 
     if (res.ok) {
