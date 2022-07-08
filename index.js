@@ -11,11 +11,14 @@ const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith(
 
 const SERVER_NAME = config.SERVER_NAME;
 const BOT_TOKEN = config.BOT_TOKEN;
+const SERVER_LOGO = config.SERVER_LOGO;
+const CHANNEL_ID = config.CHANNEL_ID;
+const COLORBOX = config.COLORBOX;
 const NAMELIST = config.NAMELIST;
 const NAMELISTENABLE = config.NAMELISTENABLE;
 const AUTODELETE = config.AUTODELETE;
-const NCOMMAND = config.NCOMMAND;
-const UPDATE_TIME = config.UPDATE_TIME;
+const NCOMMAND = config.NCOMMAND;	
+const UPDATE_TIME = config.UPDATE_TIME;	
 const PREFIX = config.PREFIX;
 
 const inFo = new fivem.ApiFiveM(config.URL_SERVER);
