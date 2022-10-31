@@ -23,6 +23,7 @@ module.exports = {
     let embed = new Discord.MessageEmbed()
       .setTitle(`Bot commands list`)
       .setDescription(`\`\`\`fix
+> ${config.PREFIX}set <ip> - for easier server switching.
 > ${config.PREFIX}s <name players> - Search players by name.
 > ${config.PREFIX}id <number id>   - Search players by number.
 > ${config.PREFIX}all              - Show all players.
