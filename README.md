@@ -25,7 +25,7 @@ Header command file. if want to test : [file 06-07-22](https://github.com/Kuju29
 
 ### Note:
 - If your server is unstable, shows offline often, you can edit fetch as below code.\
-edit file: server/info.js
+**Edit file: server/info.js**
 ```js
     const fetch = require('@vercel/fetch')(require('node-fetch'));
     // const fetch = require('node-fetch');
