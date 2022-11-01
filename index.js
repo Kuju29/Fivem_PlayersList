@@ -45,6 +45,7 @@ const activity = async () => {
         let namef = players.filter(function (person) {
           return person.name.toLowerCase().includes(config.NAMELIST);
         });
+        console.log(namef.length)
 
         if (playersonline === 0) {
           bot.user.setActivity(`⚠ Wait for Connect`, {
@@ -52,13 +53,18 @@ const activity = async () => {
           });
           console.log(`Wait for Connect update at activity`);
         } else if (playersonline >= 1) {
-          if (config.NAMELISTENABLE) {
-            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length} 🌎 ${(await inFo.getDynamic()).mapname}`, {
+          if (namef.length === 0) {
+            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 🌎 ${(await inFo.getDynamic()).hostname}`, {
+              'type': 'WATCHING'
+            });
+            console.log(`Update ${playersonline} at activity`);
+          } else if (config.NAMELISTENABLE) {
+            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length} 🌎 ${(await inFo.getDynamic()).hostname}`, {
               'type': 'WATCHING'
             });
             console.log(`Update ${playersonline} at activity`);
           } else {
-            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 🌎 ${(await inFo.getDynamic()).mapname}`, {
+            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 🌎 ${(await inFo.getDynamic()).hostname}`, {
               'type': 'WATCHING'
             });
             console.log(`Update ${playersonline} at activity`);
@@ -92,13 +98,18 @@ const activity = async () => {
           });
           console.log(`Wait for Connect update at activity`);
         } else if (playersonline >= 1) {
-          if (config.NAMELISTENABLE) {
-            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length} 🌎 ${(await inFo.getDynamic()).mapname}`, {
+          if (namef.length === 0) {
+            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 🌎 ${(await inFo.getDynamic()).hostname}`, {
+              'type': 'WATCHING'
+            });
+            console.log(`Update ${playersonline} at activity`);
+          } else if (config.NAMELISTENABLE) {
+            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length} 🌎 ${(await inFo.getDynamic()).hostname}`, {
               'type': 'WATCHING'
             });
             console.log(`Update ${playersonline} at activity`);
           } else {
-            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 🌎 ${(await inFo.getDynamic()).mapname}`, {
+            bot.user.setActivity(`💨 ${playersonline}/${maxplayers} 🌎 ${(await inFo.getDynamic()).hostname}`, {
               'type': 'WATCHING'
             });
             console.log(`Update ${playersonline} at activity`);
