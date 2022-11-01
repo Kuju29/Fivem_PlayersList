@@ -143,19 +143,17 @@ bot.on("messageCreate", async (message) => {
     inFo = new fivem.ApiFiveM(config.URL_SERVER);
   }
 
+  //  -------------------------
+
   if (command == config.PREFIX + 'set') {
     let text = message.content.toLowerCase().substr(5, 20);
     if (validateIpAndPort(text)) {
       IPPP = text;
       console.log(`${config.PREFIX}set IP ${text}`)
+      message.react('👌');
     } else {
-      let embedss = new Discord.MessageEmbed()
-        .setColor(config.COLORBOX)
-        .setDescription(`\`${config.PREFIX}set\` **IP incorrect**`)
-      message.reply({
-        embeds: [embedss]
-      })
       console.log(`${config.PREFIX}set IP incorrect`)
+      message.react('❌');
     }
   }
 
@@ -163,7 +161,10 @@ bot.on("messageCreate", async (message) => {
     let text = message.content.toLowerCase().substr(6, 20);
     Iname = text;
     console.log(`${config.PREFIX}name ${text}`)
+    message.react('👌');
   }
+
+  //  -------------------------
 
   if (command == config.PREFIX + 'all') {
     if (config.NCOMMAND) {
