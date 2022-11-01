@@ -24,6 +24,7 @@ module.exports = {
       .setTitle(`Bot commands list`)
       .setDescription(`\`\`\`fix
 > ${config.PREFIX}set <ip>         - for easier server switching.
+> ${config.PREFIX}name <namepolice>- Police count names.
 > ${config.PREFIX}s <name players> - Search players by name.
 > ${config.PREFIX}id <number id>   - Search players by number.
 > ${config.PREFIX}all              - Show all players.
