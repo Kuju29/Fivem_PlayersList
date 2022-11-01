@@ -45,7 +45,6 @@ const activity = async () => {
         let namef = players.filter(function (person) {
           return person.name.toLowerCase().includes(config.NAMELIST);
         });
-        console.log(namef.length)
 
         if (playersonline === 0) {
           bot.user.setActivity(`⚠ Wait for Connect`, {
