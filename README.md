@@ -11,7 +11,7 @@
 - Edit file config.json
 - Start.bat
 
-If there is a problem, use this file : [file]([https://github.com/Kuju29/fivem-bots-discord/archive/3c577229b50b31872b5bc639688db1aebb16e39c.zip](https://github.com/Kuju29/fivem-bots-discord/archive/457669b6db18a7df164915e8eb45e18f49da1b5e.zip))\
+If there is a problem, use this file : [file](https://github.com/Kuju29/fivem-bots-discord/archive/457669b6db18a7df164915e8eb45e18f49da1b5e.zip)\
 Header command file. if want to test : [file 06-07-22](https://github.com/Kuju29/fivem-bots-discord/files/9058917/fivem-bots-discord-04fe14b93f21aedd1e394a1563c988cbcc6233bf.zip)
 
 ### Command:
