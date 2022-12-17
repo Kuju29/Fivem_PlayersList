@@ -11,7 +11,7 @@
 - Edit file config.json
 - Start.bat
 
-discord V13 : [file](https://github.com/Kuju29/Fivem_PlayersList/archive/6e22811e1e2d90a9e51a79755824cbbdd46dafc0.zip)\
+Download for discord V13 : [file](https://github.com/Kuju29/Fivem_PlayersList/archive/6e22811e1e2d90a9e51a79755824cbbdd46dafc0.zip)
 
 ### Command:
 - !help
