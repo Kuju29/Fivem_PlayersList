@@ -66,7 +66,7 @@ function splitChunks(sourceArray, chunkSize) {
 function deployCommands() {
   const commands = [];
   const commandFiles = fs
-    .readdirSync("./src/commands")
+    .readdirSync("./commands")
     .filter((file) => file.endsWith(".js"));
 
   for (const file of commandFiles) {
