@@ -13,15 +13,6 @@
 
 Download for discord V13 : [file](https://github.com/Kuju29/Fivem_PlayersList/archive/6e22811e1e2d90a9e51a79755824cbbdd46dafc0.zip)
 
-### Command:
-- !help
-
-```js
-    "NAMELISTENABLE": true, // Enable count names from "NAMELIST"
-    "AUTODELETE": false, // Auto-delete message from a function
-    "NCOMMAND": false, // Notify a function with a message in Discord. `Completed !help`
-```
-
 ### Note:
 - If your server is unstable, shows offline often, you can edit fetch as below code.\
 **Edit file: server/info.js**
