@@ -14,6 +14,7 @@ const client = new Client({
 
 const config = require("./config.json");
 const fivem = require("./server/info.js");
+const { count } = require("node:console");
 const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
 
 var IPPP;
@@ -94,29 +95,34 @@ function deployCommands() {
 
 //  -------------------------
 
-const activity = async () => {
-
+function ipSet() {
   if (IPPP !== undefined) {
-    inFo = new fivem.ApiFiveM(IPPP);
+    return new fivem.ApiFiveM(IPPP);
   } else {
-    inFo = new fivem.ApiFiveM(config.URL_SERVER);
+    return new fivem.ApiFiveM(config.URL_SERVER);
   }
+}
 
+function nameSet() {
   if (Iname !== undefined) {
-    namename = Iname;
+    return Iname;
   } else {
-    namename = config.NAMELIST;
+    return config.NAMELIST;
   }
+}
 
-  inFo
+//  -------------------------
+
+const activity = async () => {
+  ipSet()
     .checkOnlineStatus()
     .then(async (server) => {
       if (server) {
-        let players = await inFo.getPlayers();
-        let playersonline = (await inFo.getDynamic()).clients;
-        let maxplayers = (await inFo.getDynamic()).sv_maxclients;
+        let players = await ipSet().getPlayers();
+        let playersonline = (await ipSet().getDynamic()).clients;
+        let maxplayers = (await ipSet().getDynamic()).sv_maxclients;
         let namef = players.filter(function (person) {
-          return person.name.toLowerCase().includes(namename);
+          return person.name.toLowerCase().includes(nameSet());
         });
 
         if (playersonline === 0) {
@@ -130,7 +136,7 @@ const activity = async () => {
               activities: [
                 {
                   name: `💨 ${playersonline}/${maxplayers} 🌎 ${
-                    (await inFo.getDynamic()).hostname
+                    (await ipSet().getDynamic()).hostname
                   }`,
                 },
               ],
@@ -142,7 +148,7 @@ const activity = async () => {
                 {
                   name: `💨 ${playersonline}/${maxplayers} 👮‍ ${
                     namef.length
-                  } 🌎 ${(await inFo.getDynamic()).hostname}`,
+                  } 🌎 ${(await ipSet().getDynamic()).hostname}`,
                 },
               ],
             });
@@ -190,6 +196,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (!command) return;
 
   try {
+
     if (commandName === "set-count") {
       let text = interaction.options.data[0].value;
       Iname = text.toString();
@@ -222,7 +229,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "all") {
-      inFo
+      ipSet()
         .getPlayers()
         .then(async (players) => {
           let result = [];
@@ -267,7 +274,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-id") {
-      inFo
+      ipSet()
         .getPlayers()
         .then(async (players) => {
           let text = interaction.options.data[0].value;
@@ -363,7 +370,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-name") {
-      inFo
+      ipSet()
         .getPlayers()
         .then(async (players) => {
           let text = interaction.options.data[0].value;
