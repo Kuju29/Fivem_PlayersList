@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("set-ip")
-    .setDescription("change ip address (work with activities only)")
+    .setDescription("set IP your server")
     .addStringOption((option) =>
       option
         .setName("ipaddress")
