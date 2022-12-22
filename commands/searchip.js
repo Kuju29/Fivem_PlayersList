@@ -4,7 +4,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("search-ip")
     .setDescription(
-      "show the number of players and information on the server of the IP."
+      "Search by IP for checking other servers before moving servers"
     )
     .addStringOption((option) =>
       option
