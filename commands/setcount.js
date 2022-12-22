@@ -4,7 +4,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("set-count")
     .setDescription(
-      "Count similar player names e.g.: gang names, team names, police names. (work with activities only)"
+      "set name players for count on activity function (gang names, team names, police names)"
     )
     .addStringOption((option) =>
       option
