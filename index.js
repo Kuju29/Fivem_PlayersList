@@ -14,7 +14,6 @@ const client = new Client({
 
 const config = require("./config.json");
 const fivem = require("./server/info.js");
-const { count } = require("node:console");
 const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
 
 var IPPP;
