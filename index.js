@@ -21,16 +21,13 @@ var Iname;
 
 console.logCopy = console.log.bind(console);
 console.log = function (data) {
-  var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  var currentDate =
-    "|" +
-    new Date()
-      .toLocaleString({
-        timeZone: timezone,
-      })
-      .slice(11, -3) +
-    "|";
-  this.logCopy(currentDate, data);
+  var currentDate = new Date().toLocaleString(config.Timezone, {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  this.logCopy(`|${currentDate}|`, data);
 };
 
 //  -------------------------
@@ -166,13 +163,26 @@ const activity = async () => {
 
 //  -------------------------
 
+let counter = 0;
+
 client.on("ready", async () => {
   console.log(`Logged in as ${client.user.tag}`);
+
   deployCommands();
-  setInterval(async () => {
+
+  const loop = async () => {
+    if (counter >= 20) {
+      await new Promise((resolve) => setTimeout(resolve, 60000));
+      counter = 0;
+    }
     activity();
-  }, config.UPDATE_TIME);
+    counter++;
+    setTimeout(loop, config.UPDATE_TIME);
+  };
+
+  loop();
 });
+
 
 //  -------------------------
 
