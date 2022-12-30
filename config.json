@@ -5,5 +5,6 @@
     "SERVER_LOGO": "https://www.catdumb.com/wp-content/uploads/2022/04/2-75.jpg",
     "COLORBOX": "0x00FFFF",
     "NAMELIST": "police",
-    "UPDATE_TIME": "7000"
+    "UPDATE_TIME": "7000",
+    "Timezone": "th-TH"
 }
