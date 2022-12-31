@@ -29,6 +29,42 @@ class ApiFiveM {
     }
   };
 
+  async getDynamicOnline() {
+
+    const res = await fetch(`http://${this.ip}/dynamic.json`);
+    const data = await res.json();
+
+    if (res.ok) {
+      return data.clients;
+    } else {
+      return null;
+    }
+  };
+
+  async getDynamicMax() {
+
+    const res = await fetch(`http://${this.ip}/dynamic.json`);
+    const data = await res.json();
+
+    if (res.ok) {
+      return data.sv_maxclients;
+    } else {
+      return null;
+    }
+  };
+
+  async getDynamicHost() {
+
+    const res = await fetch(`http://${this.ip}/dynamic.json`);
+    const data = await res.json();
+
+    if (res.ok) {
+      return data.hostname;
+    } else {
+      return null;
+    }
+  };
+
   async getPlayers() {
 
     const res = await fetch(`http://${this.ip}/players.json`);
