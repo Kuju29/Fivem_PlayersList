@@ -1,4 +1,4 @@
-const {  Client,  IntentsBitField,  Events,  Collection,  EmbedBuilder, } = require("discord.js");
+const { Client, IntentsBitField, Events, Collection, EmbedBuilder, } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const { Pagination } = require("discordjs-button-embed-pagination");
@@ -93,9 +93,9 @@ function deployCommands() {
 
 function ipSet() {
   if (IPPP !== undefined) {
-    return new fivem.ApiFiveM(IPPP);
+    return IPPP;
   } else {
-    return new fivem.ApiFiveM(config.URL_SERVER);
+    return config.URL_SERVER;
   }
 }
 
@@ -109,56 +109,63 @@ function nameSet() {
 
 //  -------------------------
 
-const activity = async () => {
-  ipSet()
-    .checkOnlineStatus()
-    .then(async (server) => {
-      if (server) {
-        let players = await ipSet().getPlayers();
-        let playersonline = (await ipSet().getDynamic()).clients;
-        let maxplayers = (await ipSet().getDynamic()).sv_maxclients;
-        let namef = players.filter(function (person) {
-          return person.name.toLowerCase().includes(nameSet());
-        });
+async function DaTa(ip) {
+  const Fatch = new fivem.ApiFiveM(ip);
+  try {
+    let server = await Fatch.checkOnlineStatus();
+    let players = await Fatch.getPlayers();
+    let playersonline = await Fatch.getDynamicOnline();
+    let maxplayers = await Fatch.getDynamicMax();
+    let hostname = await Fatch.getDynamicHost();
+    return { server, players, playersonline, maxplayers, hostname };
+  } catch (err) {
+    console.log(err);
+  }
+}
 
-        if (playersonline === 0) {
+const activity = async () => {
+  try {
+    let { server, players, playersonline, maxplayers, hostname } = await DaTa(
+      ipSet()
+    );
+
+    if (server) {
+      let namef = players.filter(function (person) {
+        return person.name.toLowerCase().includes(nameSet());
+      });
+      if (playersonline === 0) {
+        client.user.setPresence({
+          activities: [{ name: `⚠ Wait for Connect` }],
+        });
+        console.log(`Wait for Connect update at activity`);
+      } else if (playersonline >= 1) {
+        if (namef.length === 0) {
           client.user.setPresence({
-            activities: [{ name: `⚠ Wait for Connect` }],
+            activities: [
+              {
+                name: `💨 ${playersonline}/${maxplayers} 🌎 ${hostname}`,
+              },
+            ],
           });
-          console.log(`Wait for Connect update at activity`);
-        } else if (playersonline >= 1) {
-          if (namef.length === 0) {
-            client.user.setPresence({
-              activities: [
-                {
-                  name: `💨 ${playersonline}/${maxplayers} 🌎 ${
-                    (await ipSet().getDynamic()).hostname
-                  }`,
-                },
-              ],
-            });
-            console.log(`Update ${playersonline} at activity`);
-          } else {
-            client.user.setPresence({
-              activities: [
-                {
-                  name: `💨 ${playersonline}/${maxplayers} 👮‍ ${
-                    namef.length
-                  } 🌎 ${(await ipSet().getDynamic()).hostname}`,
-                },
-              ],
-            });
-            console.log(`Update ${playersonline} at activity`);
-          }
+          console.log(`Update ${playersonline} at activity`);
+        } else {
+          client.user.setPresence({
+            activities: [
+              {
+                name: `💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length} 🌎 ${hostname}`,
+              },
+            ],
+          });
+          console.log(`Update ${playersonline} at activity`);
         }
-      } else {
-        client.user.setPresence({ activities: [{ name: `🔴 Offline` }] });
-        console.log(`Offline at activity`);
       }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    } else {
+      client.user.setPresence({ activities: [{ name: `🔴 Offline` }] });
+      console.log(`Offline at activity`);
+    }
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 //  -------------------------
@@ -183,7 +190,6 @@ client.on("ready", async () => {
   loop();
 });
 
-
 //  -------------------------
 
 client.commands = new Collection();
@@ -205,7 +211,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (!command) return;
 
   try {
-
     if (commandName === "set-count") {
       let text = interaction.options.data[0].value;
       Iname = text.toString();
@@ -238,7 +243,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "all") {
-      ipSet()
+      new fivem.ApiFiveM(ipSet())
         .getPlayers()
         .then(async (players) => {
           let result = [];
@@ -283,7 +288,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-id") {
-      ipSet()
+      new fivem.ApiFiveM(ipSet())
         .getPlayers()
         .then(async (players) => {
           let text = interaction.options.data[0].value;
@@ -379,7 +384,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-name") {
-      ipSet()
+      new fivem.ApiFiveM(ipSet())
         .getPlayers()
         .then(async (players) => {
           let text = interaction.options.data[0].value;
