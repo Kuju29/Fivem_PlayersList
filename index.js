@@ -179,6 +179,7 @@ client.on("ready", async () => {
 
   const loop = async () => {
     if (counter >= 20) {
+      console.log("wait 1 min");
       await new Promise((resolve) => setTimeout(resolve, 60000));
       counter = 0;
     }
