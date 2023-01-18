@@ -119,7 +119,7 @@ async function DaTa(ip) {
     let hostname = await Fatch.getDynamicHost();
     return { server, players, playersonline, maxplayers, hostname };
   } catch (err) {
-    console.log(err);
+    if (config.Log_update) console.log(err);
   }
 }
 
@@ -137,7 +137,7 @@ const activity = async () => {
         client.user.setPresence({
           activities: [{ name: `⚠ Wait for Connect` }],
         });
-        console.log(`Wait for Connect update at activity`);
+        if (config.Log_update) console.log(`Wait for Connect update at activity`);
       } else if (playersonline >= 1) {
         if (namef.length === 0) {
           client.user.setPresence({
@@ -147,7 +147,7 @@ const activity = async () => {
               },
             ],
           });
-          console.log(`Update ${playersonline} at activity`);
+          if (config.Log_update) console.log(`Update ${playersonline} at activity`);
         } else {
           client.user.setPresence({
             activities: [
@@ -156,15 +156,15 @@ const activity = async () => {
               },
             ],
           });
-          console.log(`Update ${playersonline} at activity`);
+          if (config.Log_update) console.log(`Update ${playersonline} at activity`);
         }
       }
     } else {
       client.user.setPresence({ activities: [{ name: `🔴 Offline` }] });
-      console.log(`Offline at activity`);
+      if (config.Log_update) console.log(`Offline at activity`);
     }
   } catch (err) {
-    console.log(err);
+    if (config.Log_update) console.log(err);
   }
 };
 
@@ -179,7 +179,7 @@ client.on("ready", async () => {
 
   const loop = async () => {
     if (counter >= 20) {
-      console.log("wait 1 min");
+      if (config.Log_update) console.log("wait 1 min");
       await new Promise((resolve) => setTimeout(resolve, 60000));
       counter = 0;
     }
