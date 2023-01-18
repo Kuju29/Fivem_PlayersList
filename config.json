@@ -6,5 +6,6 @@
     "COLORBOX": "0x00FFFF",
     "NAMELIST": "police",
     "UPDATE_TIME": "7000",
-    "Timezone": "th-TH"
+    "Timezone": "th-TH",
+    "Log_update": false
 }
