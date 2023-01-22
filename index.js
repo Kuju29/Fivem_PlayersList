@@ -265,31 +265,18 @@ client.on(Events.InteractionCreate, async (interaction) => {
             chunksArr.push(result.splice(0, 50));
           }
 
-          let embed = new EmbedBuilder();
-          if (chunksArr.length > 0) {
             let embeds = chunksArr.map((chunk) => {
               return new EmbedBuilder()
                 .setColor(config.COLORBOX)
                 .setTitle(`All_players | ${config.SERVER_NAME}`)
-                .setDescription(chunk.join("\n"));
+                .setDescription(chunksArr.length > 0 ? chunk.join("\n") : "No Players");
             });
-
             await new Pagination(
               interaction.channel,
               embeds,
               "Part"
             ).paginate();
             console.log(`${commandName}: completed`);
-          } else {
-            embed
-              .setColor(config.COLORBOX)
-              .setTitle(`All_players | ${config.SERVER_NAME}`)
-              .setDescription(chunksArr.length > 0 ? chunksArr : "No Players");
-            interaction.reply({
-              embeds: [embed],
-            });
-            console.log(`${commandName}: completed`);
-          }
         })
         .catch((err) => {
           console.log(err);
