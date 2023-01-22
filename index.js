@@ -137,7 +137,8 @@ const activity = async () => {
         client.user.setPresence({
           activities: [{ name: `⚠ Wait for Connect` }],
         });
-        if (config.Log_update) console.log(`Wait for Connect update at activity`);
+        if (config.Log_update)
+          console.log(`Wait for Connect update at activity`);
       } else if (playersonline >= 1) {
         if (namef.length === 0) {
           client.user.setPresence({
@@ -147,7 +148,8 @@ const activity = async () => {
               },
             ],
           });
-          if (config.Log_update) console.log(`Update ${playersonline} at activity`);
+          if (config.Log_update)
+            console.log(`Update ${playersonline} at activity`);
         } else {
           client.user.setPresence({
             activities: [
@@ -156,7 +158,8 @@ const activity = async () => {
               },
             ],
           });
-          if (config.Log_update) console.log(`Update ${playersonline} at activity`);
+          if (config.Log_update)
+            console.log(`Update ${playersonline} at activity`);
         }
       }
     } else {
@@ -257,15 +260,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
             );
           }
 
-          let chunks = splitChunks(result.join("\n").toString(), 2000);
+          let chunksArr = [];
+          while (result.length > 0) {
+            chunksArr.push(result.splice(0, 50));
+          }
+
           let embed = new EmbedBuilder();
-          if (result.length > 1) {
-            let embeds = chunks.map((chunk) => {
+          if (chunksArr.length > 0) {
+            let embeds = chunksArr.map((chunk) => {
               return new EmbedBuilder()
                 .setColor(config.COLORBOX)
                 .setTitle(`All_players | ${config.SERVER_NAME}`)
-                .setDescription(chunk);
+                .setDescription(chunk.join("\n"));
             });
+
             await new Pagination(
               interaction.channel,
               embeds,
@@ -276,7 +284,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
             embed
               .setColor(config.COLORBOX)
               .setTitle(`All_players | ${config.SERVER_NAME}`)
-              .setDescription(result.length > 0 ? result : "No Players");
+              .setDescription(chunksArr.length > 0 ? chunksArr : "No Players");
             interaction.reply({
               embeds: [embed],
             });
