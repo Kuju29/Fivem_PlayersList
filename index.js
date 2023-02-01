@@ -116,18 +116,7 @@ async function DaTa(ip) {
     let players = await Fatch.getPlayers();
     let playersonline = await Fatch.getDynamicOnline();
     let maxplayers = await Fatch.getDynamicMax();
-    let hostnametext = await Fatch.getDynamicHost();
-    let desiredText = "";
-    let parts = hostnametext.split("|");
-    
-    for (let part of parts) {
-      let cleanPart = part.trim().replace(/[\^\d\[\]\s]/g, "");
-      if (cleanPart) {
-        desiredText += cleanPart + " ";
-      }
-    }
-
-    let hostname = desiredText.trim();
+    let hostname = await Fatch.getDynamicHost().replace(/[^a-zA-Z]+/g, " ");
 
     return { server, players, playersonline, maxplayers, hostname };
   } catch (err) {
