@@ -5,7 +5,7 @@ const { Pagination } = require("discordjs-button-embed-pagination");
 const path = require("node:path");
 const fs = require("node:fs");
 
-const config = require("./config.json");
+const config = require("./config.js");
 const fivem = require("./server/info.js");
 const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
 
