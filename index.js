@@ -40,6 +40,14 @@ function validateNum(input, min, max) {
   return num >= min && num <= max && input === num.toString();
 }
 
+function chunkArray(arr, size) {
+  const result = [];
+  while (arr.length) {
+    result.push(arr.splice(0, size));
+  }
+  return result;
+}
+
 //  -------------------------
 
 async function deployCommands() {
@@ -128,63 +136,41 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   try {
     if (commandName === "set-count") {
-      let text = interaction.options.data[0].value;
-      Iname = text.toString();
+      const text = interaction.options.data[0].value;
+      Iname = text;
       console.log(`${commandName}: ${text} completed`);
-      let message = await interaction.reply({
-        content: `${commandName}: to ${text} `,
-        fetchReply: true,
-      });
+      const message = await interaction.reply({ content: `${commandName}: to ${text}`, fetchReply: true });
       message.react("👌");
     }
+    
 
     if (commandName === "set-ip") {
-      let text = interaction.options.data[0].value;
+      const text = interaction.options.data[0].value;
       if (validateIpAndPort(text)) {
-        IPPP = text.toString();
-        let message = await interaction.reply({
-          content: `${commandName}: to ${text}`,
-          fetchReply: true,
-        });
+        IPPP = text;
+        const message = await interaction.reply({ content: `${commandName}: to ${text}`, fetchReply: true });
         message.react("👌");
         console.log(`${commandName}: ${text} completed`);
       } else {
-        let message = await interaction.reply({
-          content: `IP ${text} incorrect`,
-          fetchReply: true,
-        });
+        const message = await interaction.reply({ content: `IP ${text} incorrect`, fetchReply: true });
         message.react("❌");
         console.log(`${commandName}: ${text} incorrect`);
       }
-    }
+    }    
 
     if (commandName === "all") {
-      new fivem.ApiFiveM(IPPP ?? config.URL_SERVER)
-        .getPlayers()
+      const api = new fivem.ApiFiveM(IPPP ?? config.URL_SERVER);
+      api.getPlayers()
         .then(async (players) => {
-          let result = [];
-          let index = 1;
-          for (let player of players) {
-            result.push(
-              `${index++}. ${player.name} | ID : ${player.id} | Ping : ${
-                player.ping
-              }\n`
-            );
-          }
-
-          let chunksArr = [];
-          while (result.length > 0) {
-            chunksArr.push(result.splice(0, 50));
-          }
-
-          let embeds = chunksArr.map((chunk) => {
-            return new EmbedBuilder()
-              .setColor(config.COLORBOX)
-              .setTitle(`All_players | ${config.SERVER_NAME}`)
-              .setDescription(
-                chunksArr.length > 0 ? chunk.join("\n") : "No Players"
-              );
-          });
+          const result = players.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+          
+          const chunksArr = chunkArray(result, 50);
+          const embeds = chunksArr.map((chunk) => new EmbedBuilder()
+            .setColor(config.COLORBOX)
+            .setTitle(`All_players | ${config.SERVER_NAME}`)
+            .setDescription(chunk.join("\n"))
+          );
+          
           await new Pagination(interaction.channel, embeds, "Part").paginate();
           console.log(`${commandName}: completed`);
         })
@@ -194,133 +180,86 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-id") {
-      new fivem.ApiFiveM(IPPP ?? config.URL_SERVER)
-        .getPlayers()
+      const api = new fivem.ApiFiveM(IPPP ?? config.URL_SERVER);
+      api.getPlayers()
         .then(async (players) => {
-          let text = interaction.options.data[0].value;
-          let num = text.match(/[0-9]/g).join("").valueOf();
-          let playerdata = players.filter((players) => players.id == num);
-          let result1 = [];
-          let index = 1;
-          for (let player of playerdata) {
-            result1.push(
-              `${index++}. ${player.name} | ID : ${player.id} | Ping : ${
-                player.ping
-              }\n`
-            );
-          }
-          let result = result1.join("\n").toString();
-          let embed = new EmbedBuilder()
+          const text = interaction.options.data[0].value;
+          const num = text.match(/[0-9]/g).join("").valueOf();
+          const playerdata = players.filter(player => player.id == num);
+    
+          const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join("\n");
+          
+          const embed = new EmbedBuilder()
             .setColor(config.COLORBOX)
             .setTitle(`Search player | ${config.SERVER_NAME}`)
             .setDescription(result.length > 0 ? result : "No Players")
             .setTimestamp();
-          interaction.reply({
-            embeds: [embed],
-          });
+          
+          interaction.reply({ embeds: [embed] });
           console.log(`${commandName}: completed`);
         })
         .catch((err) => {
           console.log(err);
         });
     }
-
+    
     if (commandName === "search-ip") {
-      let text = interaction.options.data[0].value;
-      let iNfo = new fivem.ApiFiveM(text);
-      let embed = new EmbedBuilder();
+      const text = interaction.options.data[0].value;
+      const iNfo = new fivem.ApiFiveM(text);
+      const embed = new EmbedBuilder();
+    
       if (validateIpAndPort(text)) {
-        iNfo
-          .checkOnlineStatus()
+        iNfo.checkOnlineStatus()
           .then(async (server) => {
-            if (server) {
-              let infoplayers = await iNfo.getDynamic();
-
-              embed
-                .setColor(config.COLORBOX)
-                .setTitle(`Server: \`${text}\``)
-                .addFields([
-                  { name: "**Server Status**", value: `\`\`\`✅Online\`\`\`` },
-                  {
-                    name: "**Online Players**",
-                    value: `\`\`\`${infoplayers.clients}/${infoplayers.sv_maxclients}\`\`\``,
-                  },
-                ])
-                .setTimestamp();
-              interaction.reply({
-                embeds: [embed],
-              });
-              console.log(`${commandName}: ${text} online`);
-            } else {
-              embed
-                .setColor(config.COLORBOX)
-                .setTitle(`Server: \`${text}\``)
-                .addFields([
-                  {
-                    name: "**Server Status**",
-                    value: `\`\`\`❌Offline or Invalid IP\`\`\``,
-                  },
-                  { name: "**Online Players**", value: `\`\`\`-/-\`\`\`` },
-                ])
-                .setTimestamp();
-              interaction.reply({
-                embeds: [embed],
-              });
-              console.log(`${commandName}: ${text} offline`);
-            }
+            const infoplayers = server ? await iNfo.getDynamic() : null;
+            const fields = server ? [
+              { name: "**Server Status**", value: `\`\`\`✅Online\`\`\`` },
+              { name: "**Online Players**", value: `\`\`\`${infoplayers.clients}/${infoplayers.sv_maxclients}\`\`\`` },
+            ] : [
+              { name: "**Server Status**", value: `\`\`\`❌Offline or Invalid IP\`\`\`` },
+              { name: "**Online Players**", value: `\`\`\`-/-\`\`\`` },
+            ];
+    
+            embed.setColor(config.COLORBOX)
+              .setTitle(`Server: \`${text}\``)
+              .addFields(fields)
+              .setTimestamp();
+    
+            interaction.reply({ embeds: [embed] });
+            console.log(`${commandName}: ${text} ${server ? "online" : "offline"}`);
           })
-          .catch((err) => {
-            console.log(err);
-          });
+          .catch((err) => console.log(err));
       } else {
-        embed
-          .setColor(config.COLORBOX)
-          .addFields([
-            {
-              name: "**Are you sure the IP is correct?**",
-              value: `\`${text}\``,
-            },
-          ])
+        embed.setColor(config.COLORBOX)
+          .addFields([{ name: "**Are you sure the IP is correct?**", value: `\`${text}\`` }])
           .setTimestamp();
-        interaction.reply({
-          embeds: [embed],
-        });
+    
+        interaction.reply({ embeds: [embed] });
         console.log(`${commandName}: ${text} incorrect`);
       }
     }
+    
 
     if (commandName === "search-name") {
       new fivem.ApiFiveM(IPPP ?? config.URL_SERVER)
         .getPlayers()
         .then(async (players) => {
-          let text = interaction.options.data[0].value;
-          let playerdata = players.filter(function (person) {
-            return person.name.toLowerCase().includes(`${text}`);
-          });
-          let result1 = [];
-          let index = 1;
-          for (let player of playerdata) {
-            result1.push(
-              `${index++}. ${player.name} | ID : ${player.id} | Ping : ${
-                player.ping
-              }\n`
-            );
-          }
-          const result = result1.join("\n").toString();
-          let embed = new EmbedBuilder()
+          const text = interaction.options.data[0].value;
+          const playerdata = players.filter(person => person.name.toLowerCase().includes(text));
+          const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join('');
+    
+          const embed = new EmbedBuilder()
             .setColor(config.COLORBOX)
             .setTitle(`Search player | ${config.SERVER_NAME}`)
             .setDescription(result.length > 0 ? result : "No Players")
             .setTimestamp();
-          interaction.reply({
-            embeds: [embed],
-          });
+    
+          interaction.reply({ embeds: [embed] });
           console.log(`${commandName}: ${text} completed`);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => console.log(err));
     }
+    
   } catch (error) {
     console.error(error);
     await interaction.reply({
