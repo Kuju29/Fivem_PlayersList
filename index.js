@@ -1,9 +1,13 @@
-const { Client, IntentsBitField, Events, Collection, EmbedBuilder, } = require("discord.js");
+const { Client, IntentsBitField, Events, Collection, EmbedBuilder } = require("discord.js");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const { Pagination } = require("discordjs-button-embed-pagination");
 const path = require("node:path");
 const fs = require("node:fs");
+
+const config = require("./config.json");
+const fivem = require("./server/info.js");
+const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
 
 const intents = new IntentsBitField();
 intents.add(IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.Guilds);
@@ -12,22 +16,14 @@ const client = new Client({
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
 
-const config = require("./config.json");
-const fivem = require("./server/info.js");
-const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
-
-var IPPP;
-var Iname;
+var IPPP, Iname;
 
 console.logCopy = console.log.bind(console);
 console.log = function (data) {
-  var currentDate = new Date().toLocaleString(config.Timezone, {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  this.logCopy(`|${currentDate}|`, data);
+  this.logCopy(
+    `|${new Date().toLocaleString(config.Timezone, { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })}|`,
+    data
+  );
 };
 
 //  -------------------------
@@ -36,13 +32,7 @@ function validateIpAndPort(input) {
   var parts = input.split(":");
   var ip = parts[0].split(".");
   var port = parts[1];
-  return (
-    validateNum(port, 1, 65535) &&
-    ip.length == 4 &&
-    ip.every(function (segment) {
-      return validateNum(segment, 0, 255);
-    })
-  );
+  return ip.length === 4 && ip.every((segment) => validateNum(segment, 0, 255)) && validateNum(port, 1, 65535);
 }
 
 function validateNum(input, min, max) {
@@ -50,60 +40,16 @@ function validateNum(input, min, max) {
   return num >= min && num <= max && input === num.toString();
 }
 
-function splitChunks(sourceArray, chunkSize) {
-  let result = [];
-  for (var i = 0; i < sourceArray.length; i += chunkSize) {
-    result[i / chunkSize] = sourceArray.slice(i, i + chunkSize);
-  }
-  return result;
-}
-
 //  -------------------------
 
-function deployCommands() {
-  const commands = [];
-  const commandFiles = fs
-    .readdirSync("./commands")
-    .filter((file) => file.endsWith(".js"));
-
-  for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    commands.push(command.data.toJSON());
-  }
-
-  (async () => {
-    try {
-      console.log(
-        `Started refreshing ${commands.length} application (/) commands.`
-      );
-      const data = await rest.put(Routes.applicationCommands(client.user.id), {
-        body: commands,
-      });
-
-      console.log(
-        `Successfully reloaded ${data.length} application (/) commands.`
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  })();
-}
-
-//  -------------------------
-
-function ipSet() {
-  if (IPPP !== undefined) {
-    return IPPP;
-  } else {
-    return config.URL_SERVER;
-  }
-}
-
-function nameSet() {
-  if (Iname !== undefined) {
-    return Iname;
-  } else {
-    return config.NAMELIST;
+async function deployCommands() {
+  const commands = fs.readdirSync("./commands").filter((file) => file.endsWith(".js")).map((file) => require(`./commands/${file}`).data.toJSON());
+  try {
+    console.log(`Started refreshing ${commands.length} application (/) commands.`);
+    const data = await rest.put(Routes.applicationCommands(client.user.id), { body: commands });
+    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -112,62 +58,26 @@ function nameSet() {
 async function DaTa(ip) {
   const Fatch = new fivem.ApiFiveM(ip);
   try {
-    let server = await Fatch.checkOnlineStatus();
-    let players = await Fatch.getPlayers();
-    let playersonline = await Fatch.getDynamicOnline();
-    let maxplayers = await Fatch.getDynamicMax();
-    let hostnametext = await Fatch.getDynamicHost();
-    let hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
-
+    const [server, players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = await Promise.all([
+      Fatch.checkOnlineStatus(),
+      Fatch.getPlayers(),
+      Fatch.getDynamic(),
+    ]);
+    const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
     return { server, players, playersonline, maxplayers, hostname };
   } catch (err) {
     if (config.Log_update) console.log(err);
   }
 }
 
+
 const activity = async () => {
   try {
-    let { server, players, playersonline, maxplayers, hostname } = await DaTa(
-      ipSet()
-    );
-
-    if (server) {
-      let namef = players.filter(function (person) {
-        return person.name.toLowerCase().includes(nameSet());
-      });
-      if (playersonline === 0) {
-        client.user.setPresence({
-          activities: [{ name: `⚠ Wait for Connect` }],
-        });
-        if (config.Log_update)
-          console.log(`Wait for Connect update at activity`);
-      } else if (playersonline >= 1) {
-        if (namef.length === 0) {
-          client.user.setPresence({
-            activities: [
-              {
-                name: `💨 ${playersonline}/${maxplayers} 🌎 ${hostname}`,
-              },
-            ],
-          });
-          if (config.Log_update)
-            console.log(`Update ${playersonline} at activity`);
-        } else {
-          client.user.setPresence({
-            activities: [
-              {
-                name: `💨 ${playersonline}/${maxplayers} 👮‍ ${namef.length} 🌎 ${hostname}`,
-              },
-            ],
-          });
-          if (config.Log_update)
-            console.log(`Update ${playersonline} at activity`);
-        }
-      }
-    } else {
-      client.user.setPresence({ activities: [{ name: `🔴 Offline` }] });
-      if (config.Log_update) console.log(`Offline at activity`);
-    }
+    let { server, players, playersonline, maxplayers, hostname } = await DaTa(IPPP ?? config.URL_SERVER);
+    let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
+    let status = server ? (playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect") : "🔴 Offline";
+    client.user.setPresence({ activities: [{ name: status }] });
+    if (config.Log_update) console.log(status);
   } catch (err) {
     if (config.Log_update) console.log(err);
   }
@@ -267,18 +177,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
             chunksArr.push(result.splice(0, 50));
           }
 
-            let embeds = chunksArr.map((chunk) => {
-              return new EmbedBuilder()
-                .setColor(config.COLORBOX)
-                .setTitle(`All_players | ${config.SERVER_NAME}`)
-                .setDescription(chunksArr.length > 0 ? chunk.join("\n") : "No Players");
-            });
-            await new Pagination(
-              interaction.channel,
-              embeds,
-              "Part"
-            ).paginate();
-            console.log(`${commandName}: completed`);
+          let embeds = chunksArr.map((chunk) => {
+            return new EmbedBuilder()
+              .setColor(config.COLORBOX)
+              .setTitle(`All_players | ${config.SERVER_NAME}`)
+              .setDescription(
+                chunksArr.length > 0 ? chunk.join("\n") : "No Players"
+              );
+          });
+          await new Pagination(interaction.channel, embeds, "Part").paginate();
+          console.log(`${commandName}: completed`);
         })
         .catch((err) => {
           console.log(err);
