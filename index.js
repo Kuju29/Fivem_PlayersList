@@ -159,7 +159,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "all") {
-      new fivem.ApiFiveM(ipSet())
+      new fivem.ApiFiveM(IPPP ?? config.URL_SERVER)
         .getPlayers()
         .then(async (players) => {
           let result = [];
@@ -194,7 +194,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-id") {
-      new fivem.ApiFiveM(ipSet())
+      new fivem.ApiFiveM(IPPP ?? config.URL_SERVER)
         .getPlayers()
         .then(async (players) => {
           let text = interaction.options.data[0].value;
@@ -290,7 +290,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-name") {
-      new fivem.ApiFiveM(ipSet())
+      new fivem.ApiFiveM(IPPP ?? config.URL_SERVER)
         .getPlayers()
         .then(async (players) => {
           let text = interaction.options.data[0].value;
