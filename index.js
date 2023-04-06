@@ -74,20 +74,26 @@ async function DaTa(ip) {
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
     return { server, players, playersonline, maxplayers, hostname };
   } catch (err) {
-    if (config.Log_update) console.log(err);
+    if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
 }
 
 
 const activity = async () => {
   try {
-    let { server, players, playersonline, maxplayers, hostname } = await DaTa(IPPP ?? config.URL_SERVER);
+    let { server, players, playersonline, maxplayers, hostname } = (await DaTa(IPPP ?? config.URL_SERVER)) ?? {
+      server: false,
+      players: [],
+      playersonline: 0,
+      maxplayers: 0,
+      hostname: "",
+    };
     let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
     let status = server ? (playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect") : "🔴 Offline";
     client.user.setPresence({ activities: [{ name: status }] });
     if (config.Log_update) console.log(status);
   } catch (err) {
-    if (config.Log_update) console.log(err);
+    if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
 };
 
