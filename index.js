@@ -63,16 +63,12 @@ async function deployCommands() {
 
 //  -------------------------
 
-async function DaTa(ip, retries = 3) {
+async function DaTa(ip, retries = 5) {
   const Fatch = new fivem.ApiFiveM(ip);
   try {
     const server = await Fatch.checkOnlineStatus();
     const players = await Fatch.getPlayers();
-    const dynamicData = await Fatch.getDynamic();
-    
-    const playersonline = dynamicData.clients;
-    const maxplayers = dynamicData.sv_maxclients;
-    const hostnametext = dynamicData.hostname;
+    const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = await Fatch.getDynamic();
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
 
     return { server, players, playersonline, maxplayers, hostname };
@@ -94,10 +90,15 @@ async function DaTa(ip, retries = 3) {
 const activity = async () => {
   try {
     let { server, players, playersonline, maxplayers, hostname } = (await DaTa(IPPP ?? config.URL_SERVER));
+    if (server) {
     let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
-    let status = server ? (playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect") : "🔴 Offline";
+    let status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
     client.user.setPresence({ activities: [{ name: status }] });
     if (config.Log_update) console.log(status);
+    } else {
+      client.user.setPresence({ activities: [{ name: `🔴 Offline` }] });
+      if (config.Log_update) console.log(`Offline at activity`);
+    }
   } catch (err) {
     if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
