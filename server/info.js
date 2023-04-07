@@ -7,12 +7,18 @@ class ApiFiveM {
   }
 
   async checkOnlineStatus() {
-    try {
-      const online = await fetch(`http://${this.ip}/dynamic.json`);
-      return online.status >= 200 && online.status < 300;
-    } catch (err) {
-      return false;
+    const endpoints = ['/dynamic.json', '/players.json', '/info.json'];
+
+    for (const endpoint of endpoints) {
+      try {
+        const online = await fetch(`http://${this.ip}${endpoint}`);
+        if (online.status >= 200 && online.status < 300) {
+          return true;
+        }
+      } catch (err) {
+      }
     }
+    return false;
   }
 
   async getDynamic() {
