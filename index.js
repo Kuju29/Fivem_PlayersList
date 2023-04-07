@@ -63,31 +63,37 @@ async function deployCommands() {
 
 //  -------------------------
 
-async function DaTa(ip) {
+async function DaTa(ip, retries = 3) {
   const Fatch = new fivem.ApiFiveM(ip);
   try {
-    const [server, players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = await Promise.all([
-      Fatch.checkOnlineStatus(),
-      Fatch.getPlayers(),
-      Fatch.getDynamic(),
-    ]);
+    const server = await Fatch.checkOnlineStatus();
+    const players = await Fatch.getPlayers();
+    const dynamicData = await Fatch.getDynamic();
+    
+    const playersonline = dynamicData.clients;
+    const maxplayers = dynamicData.sv_maxclients;
+    const hostnametext = dynamicData.hostname;
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
+
     return { server, players, playersonline, maxplayers, hostname };
   } catch (err) {
+    if (retries > 0) {
+      return await DaTa(ip, retries - 1);
+    }
     if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
-  }
-}
-
-
-const activity = async () => {
-  try {
-    let { server, players, playersonline, maxplayers, hostname } = (await DaTa(IPPP ?? config.URL_SERVER)) ?? {
+    return {
       server: false,
       players: [],
       playersonline: 0,
       maxplayers: 0,
       hostname: "",
     };
+  }
+}
+
+const activity = async () => {
+  try {
+    let { server, players, playersonline, maxplayers, hostname } = (await DaTa(IPPP ?? config.URL_SERVER));
     let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
     let status = server ? (playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect") : "🔴 Offline";
     client.user.setPresence({ activities: [{ name: status }] });
