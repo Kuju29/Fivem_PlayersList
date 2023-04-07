@@ -90,15 +90,10 @@ async function DaTa(ip, retries = 5) {
 const activity = async () => {
   try {
     let { server, players, playersonline, maxplayers, hostname } = (await DaTa(IPPP ?? config.URL_SERVER));
-    if (server) {
     let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
-    let status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
+    let status = server ? (playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect") : "🔴 Offline";
     client.user.setPresence({ activities: [{ name: status }] });
     if (config.Log_update) console.log(status);
-    } else {
-      client.user.setPresence({ activities: [{ name: `🔴 Offline` }] });
-      if (config.Log_update) console.log(`Offline at activity`);
-    }
   } catch (err) {
     if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
