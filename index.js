@@ -63,7 +63,7 @@ async function deployCommands() {
 
 //  -------------------------
 
-async function DaTa(ip, retries = 5) {
+async function DaTa(ip, retries = 5, maxRetries = 5) {
   const Fatch = new fivem.ApiFiveM(ip);
   try {
     const server = await Fatch.checkOnlineStatus();
@@ -74,8 +74,8 @@ async function DaTa(ip, retries = 5) {
     return { server, players, playersonline, maxplayers, hostname };
   } catch (err) {
     if (retries > 0) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      return await DaTa(ip, retries - 1);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return await DaTa(ip, retries - 1, maxRetries);
     }
     if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
