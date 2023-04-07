@@ -77,16 +77,10 @@ async function DaTa(ip) {
       return { server, players, playersonline, maxplayers, hostname };
     } catch (err) {
       if (retriesLeft > 0) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
         return await fetchData(retriesLeft - 1);
       }
       if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
-      return {
-        server: false,
-        players: [],
-        playersonline: 0,
-        maxplayers: 0,
-        hostname: "",
-      };
     }
   };
 
