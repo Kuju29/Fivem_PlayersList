@@ -11,7 +11,7 @@
 - Edit file config.json
 - Start.bat
 
-Download for discord V13 : [file](https://github.com/Kuju29/Fivem_PlayersList/archive/6e22811e1e2d90a9e51a79755824cbbdd46dafc0.zip)
+Download for retry version for unstable servers : [Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip](https://github.com/Kuju29/Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip)
 
 ### Note:
 - If your server is unstable, shows offline often, you can edit fetch as below code.\
