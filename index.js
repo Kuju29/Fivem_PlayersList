@@ -71,34 +71,26 @@ let previousData = {
   hostname: "",
 };
 
-async function DaTa(ip, maxRetries = 3) {
+async function DaTa(ip) {
   const Fatch = new fivem.ApiFiveM(ip);
-  let retryCount = 0;
 
-  while (retryCount < maxRetries) {
-    try {
-      const server = await Fatch.checkOnlineStatus();
-      if (server) {
+  try {
+    const server = await Fatch.checkOnlineStatus();
+    if (server) {
+      try {
         const players = await Fatch.getPlayers();
-        const dynamicData = await Fatch.getDynamic();
+        const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = await Fatch.getDynamic();
+        const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
 
-        if (dynamicData && dynamicData.clients !== undefined && dynamicData.sv_maxclients !== undefined && dynamicData.hostname !== undefined) {
-          const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamicData;
-          const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
-
-          previousData = { server, players, playersonline, maxplayers, hostname };
-          return previousData;
-        }
-      } else {
-        previousData.server = false;
-        return previousData;
+        previousData = { server, players, playersonline, maxplayers, hostname };
+      } catch (err) {
+        if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
       }
-    } catch (err) {
-      if (config.Log_update && err.message !== "Request timed out") console.log(err);
+    } else {
+      previousData.server = false;
     }
-
-    retryCount++;
-    await new Promise((resolve) => setTimeout(resolve, 2 ** retryCount * 100 + Math.random() * 100));
+  } catch (err) {
+    if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
 
   return previousData;
@@ -106,15 +98,13 @@ async function DaTa(ip, maxRetries = 3) {
 
 const activity = async () => {
   try {
-    let { server, players, playersonline, maxplayers, hostname } = await DaTa(IPPP ?? config.URL_SERVER);
-
+    let { server, players, playersonline, maxplayers, hostname } = (await DaTa(IPPP ?? config.URL_SERVER));
     let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
     let status = server ? (playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect") : "🔴 Offline";
     client.user.setPresence({ activities: [{ name: status }] });
-
     if (config.Log_update) console.log(status);
   } catch (err) {
-    if (config.Log_update && err.message !== "Request timed out") console.log(err);
+    if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
 };
 
