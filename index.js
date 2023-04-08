@@ -63,8 +63,6 @@ async function deployCommands() {
 
 //  -------------------------
 
-// ... ApiFiveM class remains unchanged ...
-
 let previousData = {
   server: false,
   players: [],
