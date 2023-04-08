@@ -63,29 +63,37 @@ async function deployCommands() {
 
 //  -------------------------
 
+let previousData = {
+  server: false,
+  players: [],
+  playersonline: 0,
+  maxplayers: 0,
+  hostname: "",
+};
+
 async function DaTa(ip) {
   const Fatch = new fivem.ApiFiveM(ip);
 
   try {
     const server = await Fatch.checkOnlineStatus();
     if (server) {
-      const players = await Fatch.getPlayers();
-      const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = await Fatch.getDynamic();
-      const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
+      try {
+        const players = await Fatch.getPlayers();
+        const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = await Fatch.getDynamic();
+        const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
 
-      return { server, players, playersonline, maxplayers, hostname };
+        previousData = { server, players, playersonline, maxplayers, hostname };
+      } catch (err) {
+        if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
+      }
     } else {
-      return {
-        server: false,
-        players: [],
-        playersonline: 0,
-        maxplayers: 0,
-        hostname: "",
-      };
+      previousData.server = false;
     }
   } catch (err) {
     if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
   }
+
+  return previousData;
 }
 
 const activity = async () => {
