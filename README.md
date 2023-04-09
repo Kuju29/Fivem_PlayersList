@@ -11,15 +11,9 @@
 - Edit file config.json
 - Start.bat
 
-Download for retry version for unstable servers : [Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip](https://github.com/Kuju29/Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip)
-
 ### Note:
-- If your server is unstable, shows offline often, you can edit fetch as below code.\
-**Edit file: server/info.js**
-```js
-    const fetch = require('@vercel/fetch')(require('node-fetch'));
-    // const fetch = require('node-fetch');
-```
+**If your server is unstable, often show offline**
+- Download retry version for unstable servers : [Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip](https://github.com/Kuju29/Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip)
 
 ### Example:
 <kbd> ![image](https://user-images.githubusercontent.com/22098092/208278720-ef0431c8-beb8-44f8-a12a-c427a0452fec.png)
