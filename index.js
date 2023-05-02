@@ -65,26 +65,35 @@ async function deployCommands() {
 
 async function DaTa(ip) {
   const Fatch = new fivem.ApiFiveM(ip);
-  const [server, players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = await Promise.all([
-      Fatch.checkOnlineStatus(),
+  const server = await Fatch.checkOnlineStatus();
+
+  if (server) {
+    const [players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = await Promise.all([
       Fatch.getPlayers(),
       Fatch.getDynamic(),
     ]);
+
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
     return { server, players, playersonline, maxplayers, hostname };
+  } else {
+    return { server };
+  }
 }
 
 const activity = async () => {
-  try {
-    let { server, players, playersonline, maxplayers, hostname } = (await DaTa(IPPP ?? config.URL_SERVER));
+  const { server, players, playersonline, maxplayers, hostname } = await DaTa(IPPP ?? config.URL_SERVER);
+  let status;
+
+  if (server) {
     let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
-    let status = server ? (playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect") : "🔴 Offline";
-    client.user.setPresence({ activities: [{ name: status }] });
-    if (config.Log_update) console.log(status);
-  } catch (err) {
-    if (config.Log_update && err.code !== 'ETIMEDOUT') console.log(err);
+    status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
+  } else {
+    status = "🔴 Offline";
   }
-};
+
+  client.user.setPresence({ activities: [{ name: status }] });
+  if (config.Log_update) console.log(status);
+}
 
 //  -------------------------
 
@@ -92,6 +101,11 @@ let counter = 0;
 
 client.on("ready", async () => {
   console.log(`Logged in as ${client.user.tag}`);
+
+  client.user.setPresence({
+    // status: 'idle',
+    status: 'dnd', // Do Not Disturb
+  });
 
   deployCommands();
 
