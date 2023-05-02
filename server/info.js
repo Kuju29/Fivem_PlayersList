@@ -1,25 +1,28 @@
 const fetch = require('node-fetch');
 
+async function tryFetchEndpoints(ip, endpoints) {
+  for (const endpoint of endpoints) {
+    try {
+      const online = await fetch(`http://${ip}${endpoint}`);
+      if (online.status >= 200 && online.status < 300) {
+        return true;
+      }
+    } catch (err) {
+    }
+  }
+  return false;
+}
+
 class ApiFiveM {
   constructor(ip) {
     if (!ip) throw Error('Please put "IP:Port"');
     this.ip = ip;
   }
-
-  async checkOnlineStatus() {
+  
+  async checkOnlineStatus(ip) {
     const endpoints = ['/dynamic.json', '/players.json', '/info.json'];
-
-    for (const endpoint of endpoints) {
-      try {
-        const online = await fetch(`http://${this.ip}${endpoint}`);
-        if (online.status >= 200 && online.status < 300) {
-          return true;
-        }
-      } catch (err) {
-        return false;
-      }
-    }
-    return false;
+    const isOnline = await tryFetchEndpoints(this.ip, endpoints);
+    return isOnline;
   }
 
   async getDynamic() {
