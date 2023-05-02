@@ -65,17 +65,13 @@ async function deployCommands() {
 
 async function DaTa(ip) {
   const Fatch = new fivem.ApiFiveM(ip);
-  try {
-    const [server, players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = await Promise.all([
+  const [server, players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = await Promise.all([
       Fatch.checkOnlineStatus(),
       Fatch.getPlayers(),
       Fatch.getDynamic(),
     ]);
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
     return { server, players, playersonline, maxplayers, hostname };
-  } catch (err) {
-    if (config.Log_update) console.log(err);
-  }
 }
 
 const activity = async () => {
