@@ -16,6 +16,7 @@ class ApiFiveM {
           return true;
         }
       } catch (err) {
+        return false;
       }
     }
     return false;
