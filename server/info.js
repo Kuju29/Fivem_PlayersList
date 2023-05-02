@@ -1,16 +1,14 @@
 const fetch = require('node-fetch');
 
 async function tryFetchEndpoints(ip, endpoints) {
-  for (const endpoint of endpoints) {
-    try {
-      const online = await fetch(`http://${ip}${endpoint}`);
-      if (online.status >= 200 && online.status < 300) {
-        return true;
-      }
-    } catch (err) {
-    }
-  }
-  return false;
+  const fetchPromises = endpoints.map(endpoint => {
+    return fetch(`http://${ip}${endpoint}`).then(response => {
+      return response.status >= 200 && response.status < 300;
+    }).catch(() => false);
+  });
+
+  const results = await Promise.allSettled(fetchPromises);
+  return results.some(result => result.value);
 }
 
 class ApiFiveM {
