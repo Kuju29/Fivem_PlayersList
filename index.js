@@ -162,7 +162,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }    
 
     if (commandName === "all") {
-      const api = new fivem.ApiFiveM(IPPP ?? config.URL_SERVER);
+      const api = new ApiFiveM(IPPP ?? config.URL_SERVER);
       api.getPlayers()
         .then(async (players) => {
           const result = players.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
@@ -183,7 +183,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (commandName === "search-id") {
-      const api = new fivem.ApiFiveM(IPPP ?? config.URL_SERVER);
+      const api = new ApiFiveM(IPPP ?? config.URL_SERVER);
       api.getPlayers()
         .then(async (players) => {
           const text = interaction.options.data[0].value;
@@ -208,7 +208,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     
     if (commandName === "search-ip") {
       const text = interaction.options.data[0].value;
-      const iNfo = new fivem.ApiFiveM(text);
+      const iNfo = new ApiFiveM(text);
       const embed = new EmbedBuilder();
     
       if (validateIpAndPort(text)) {
@@ -244,7 +244,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     
 
     if (commandName === "search-name") {
-      new fivem.ApiFiveM(IPPP ?? config.URL_SERVER)
+      new ApiFiveM(IPPP ?? config.URL_SERVER)
         .getPlayers()
         .then(async (players) => {
           const text = interaction.options.data[0].value;
