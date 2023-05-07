@@ -48,6 +48,10 @@ function chunkArray(arr, size) {
   return result;
 }
 
+function getCheckCFXIP() {
+  return config.URL_CFX ? config.URL_CFX : IPPP ?? config.URL_SERVER;
+}
+
 //  -------------------------
 
 async function deployCommands() {
@@ -67,7 +71,7 @@ async function DaTa(ip) {
   const fivem = new ApiFiveM(ip);
   const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
   if (server) {
-    const [players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = config.URL_CFX ? [server.players, server.Data] : await Promise.all([fivem.getPlayers(), fivem.getDynamic()]);
+    const [players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = config.URL_CFX ? [server.Data.players, server.Data] : await Promise.all([fivem.getPlayers(), fivem.getDynamic()]);
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
     return { server, players, playersonline, maxplayers, hostname };
   } else {
@@ -76,10 +80,10 @@ async function DaTa(ip) {
 }
 
 const activity = async () => {
-    const { server, players, playersonline, maxplayers, hostname } =  await DaTa(config.URL_CFX ? config.URL_CFX : IPPP ?? config.URL_SERVER);
+    const { server, players, playersonline, maxplayers, hostname } =  await DaTa(getCheckCFXIP());
     let status;
     if (server) {
-      let namef = config.URL_CFX ? "" : players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
+      let namef = players.filter((player) => player.name.normalize().toLowerCase().includes((Iname ?? config.NAMELIST).normalize().toLowerCase()));
       status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
     } else {
       status = "🔴 Offline";
@@ -97,8 +101,7 @@ client.on("ready", async () => {
   console.log(`Logged in as ${client.user.tag}`);
 
   client.user.setPresence({
-    // status: 'idle',
-    status: 'dnd', // Do Not Disturb
+    status: config.STATUS,
   });
 
   deployCommands();
@@ -162,50 +165,41 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }    
 
     if (commandName === "all") {
-      const api = new ApiFiveM(IPPP ?? config.URL_SERVER);
-      api.getPlayers()
-        .then(async (players) => {
-          const result = players.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
-          
-          const chunksArr = chunkArray(result, 50);
-          const embeds = chunksArr.map((chunk) => new EmbedBuilder()
-            .setColor(config.COLORBOX)
-            .setTitle(`All_players | ${config.SERVER_NAME}`)
-            .setDescription(chunk.join("\n"))
-          );
-          
-          await new Pagination(interaction.channel, embeds, "Part").paginate();
-          console.log(`${commandName}: completed`);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+      await interaction.deferReply();
+      const { players } = await DaTa(getCheckCFXIP());
+      const result = players.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+  
+      const chunksArr = chunkArray(result, 50);
+      const embeds = chunksArr.map((chunk) => new EmbedBuilder()
+          .setColor(config.COLORBOX)
+          .setTitle(`All_players | ${config.SERVER_NAME}`)
+          .setDescription(chunk.join("\n"))
+      );
+  
+      await new Pagination(interaction.channel, embeds, "Part").paginate();
+  
+      await interaction.editReply({ content: 'All players list has been generated.', ephemeral: false });
+      console.log(`${commandName}: completed`);
+  }
 
     if (commandName === "search-id") {
-      const api = new ApiFiveM(IPPP ?? config.URL_SERVER);
-      api.getPlayers()
-        .then(async (players) => {
-          const text = interaction.options.data[0].value;
-          const num = text.match(/[0-9]/g).join("").valueOf();
-          const playerdata = players.filter(player => player.id == num);
-    
-          const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join("\n");
-          
-          const embed = new EmbedBuilder()
-            .setColor(config.COLORBOX)
-            .setTitle(`Search player | ${config.SERVER_NAME}`)
-            .setDescription(result.length > 0 ? result : "No Players")
-            .setTimestamp();
-          
-          interaction.reply({ embeds: [embed] });
-          console.log(`${commandName}: completed`);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-    
+      const { players } = await DaTa(getCheckCFXIP());
+      const text = interaction.options.data[0].value;
+      const num = text.match(/[0-9]/g).join("").valueOf();
+      const playerdata = players.filter(player => player.id == num);
+
+      const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join("\n");
+      
+      const embed = new EmbedBuilder()
+          .setColor(config.COLORBOX)
+          .setTitle(`Search player | ${config.SERVER_NAME}`)
+          .setDescription(result.length > 0 ? result : "No Players")
+          .setTimestamp();
+      
+      interaction.reply({ embeds: [embed] });
+      console.log(`${commandName}: completed`);
+  }
+
     if (commandName === "search-ip") {
       const text = interaction.options.data[0].value;
       const iNfo = new ApiFiveM(text);
@@ -240,28 +234,23 @@ client.on(Events.InteractionCreate, async (interaction) => {
         interaction.reply({ embeds: [embed] });
         console.log(`${commandName}: ${text} incorrect`);
       }
-    }
+  }
     
-
     if (commandName === "search-name") {
-      new ApiFiveM(IPPP ?? config.URL_SERVER)
-        .getPlayers()
-        .then(async (players) => {
-          const text = interaction.options.data[0].value;
-          const playerdata = players.filter(person => person.name.toLowerCase().includes(text));
-          const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join('');
-    
-          const embed = new EmbedBuilder()
-            .setColor(config.COLORBOX)
-            .setTitle(`Search player | ${config.SERVER_NAME}`)
-            .setDescription(result.length > 0 ? result : "No Players")
-            .setTimestamp();
-    
-          interaction.reply({ embeds: [embed] });
-          console.log(`${commandName}: ${text} completed`);
-        })
-        .catch((err) => console.log(err));
-    }
+      const { players } = await DaTa(getCheckCFXIP());
+      const text = interaction.options.data[0].value.normalize().toLowerCase();
+      const playerdata = players.filter(person => person.name.normalize().toLowerCase().includes(text));
+      const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join('');
+  
+      const embed = new EmbedBuilder()
+          .setColor(config.COLORBOX)
+          .setTitle(`Search player | ${config.SERVER_NAME}`)
+          .setDescription(result.length > 0 ? result : "No Players")
+          .setTimestamp();
+  
+      interaction.reply({ embeds: [embed] });
+      console.log(`${commandName}: ${text} completed`);
+  }
     
   } catch (error) {
     console.error(error);
