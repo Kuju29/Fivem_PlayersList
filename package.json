@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.9.0",
+    "cheerio": "^1.0.0-rc.12",
     "discordjs-button-embed-pagination": "^5.0.0",
     "node-fetch": "^2.6.9"
   }
