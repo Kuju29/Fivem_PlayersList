@@ -1,5 +1,4 @@
 const fetch = require('node-fetch');
-const cheerio = require('cheerio');
 
 async function tryFetchEndpoints(ip, endpoints) {
   const fetchPromises = endpoints.map(endpoint => {
@@ -17,27 +16,9 @@ async function getServerInfo(url) {
     'User-Agent':
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
   };
-
-  try {
-    const response = await fetch(url, { headers });
-
-    if (response.status === 200) {
-      const html = await response.text();
-      const $ = cheerio.load(html);
-
-      const playersElement = $('span.players');
-      const playersCount = parseInt(playersElement.contents().eq(1).text().trim(), 10);
-
-      const titleElement = $('h1');
-      const serverTitle = titleElement.text().trim();
-
-      return { playersCount, serverTitle };
-    } else {
-      return null;
-    }
-  } catch (error) {
-    return null;
-  }
+  const edit_url = "https://servers-frontend.fivem.net/api/servers/single/" + url.match(/join\/(.+)/)[1];
+  const res = await fetch(edit_url, { headers });
+  return res.ok ? await res.json() : null;
 }
 
 class ApiFiveM {
