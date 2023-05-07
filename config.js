@@ -8,5 +8,5 @@ module.exports = {
     "NAMELIST": "police",
     "UPDATE_TIME": "7000",
     "Timezone": "th-TH",
-    "Log_update": true, // true, false
+    "Log_update": true // true, false
 };
