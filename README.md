@@ -1,5 +1,8 @@
 # fivem-bots-discord
 
+### Note:
+- Using cfx url if your server is updating back end using the same url or ip will cause the server to show both alternately. It happened to me and I'm looking for a solution to this problem.
+
 ### Run:
 - Install [Node](https://nodejs.org/en/)
 - Create [token bots](https://discord.com/developers/applications)
@@ -11,7 +14,7 @@
 - Edit file config.json
 - Start.bat
 
-### Note:
+### Old version:
 **If your server is unstable, often show offline**
 - Download retry version for unstable servers : [Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip](https://github.com/Kuju29/Fivem_PlayersList/archive/2e58e04717906e6e432a64e3dd6a4e5481c18cc9.zip)
 
