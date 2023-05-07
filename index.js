@@ -6,7 +6,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 
 const config = require("./config.js");
-const fivem = require("./server/info.js");
+const { ApiFiveM, getServerInfo } = require("./server/info.js");
 const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
 
 const intents = new IntentsBitField();
@@ -63,8 +63,20 @@ async function deployCommands() {
 
 //  -------------------------
 
+async function displayServerInfo(ip) {
+  const serverInfo = await getServerInfo(ip);
+
+  if (serverInfo) {
+    const { playersCount, serverTitle } = serverInfo;
+    const serverT = serverTitle.replace(/[^a-zA-Z]+/g, " ");
+    return { playersCount, serverT };
+  } else {
+    return false;
+  }
+}
+
 async function DaTa(ip) {
-  const Fatch = new fivem.ApiFiveM(ip);
+  const Fatch = new ApiFiveM(ip);
   const server = await Fatch.checkOnlineStatus();
 
   if (server) {
@@ -82,15 +94,23 @@ async function DaTa(ip) {
 
 const activity = async () => {
   const { server, players, playersonline, maxplayers, hostname } = await DaTa(IPPP ?? config.URL_SERVER);
+  const { playersCount, serverT } = await displayServerInfo(config.url);
+  console.Console
   let status;
-
-  if (server) {
-    let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
-    status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
+  if (config.url) {
+    if (serverT) {
+      status = playersCount > 0 ? `💨 ${playersCount} 🌎 ${serverT}` : "⚠ Wait for Connect";
+    } else {
+      status = "🔴 Offline";
+    }
   } else {
-    status = "🔴 Offline";
+    if (server) {
+      let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
+      status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
+    } else {
+      status = "🔴 Offline";
+    }
   }
-
   client.user.setPresence({ activities: [{ name: status }] });
   if (config.Log_update) console.log(status);
 }
