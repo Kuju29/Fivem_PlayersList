@@ -71,7 +71,11 @@ async function DaTa(ip) {
   const fivem = new ApiFiveM(ip);
   const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
   if (server) {
-    const [players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = config.URL_CFX ? [server.Data.players, server.Data] : await Promise.all([fivem.getPlayers(), fivem.getDynamic()]);
+    const [players, dynamic] = await Promise.all([
+      config.URL_CFX ? server.Data.players : fivem.getPlayers(),
+      config.URL_CFX ? server.Data : fivem.getDynamic()
+    ]);
+    const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
     return { server, players, playersonline, maxplayers, hostname };
   } else {
