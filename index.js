@@ -64,12 +64,13 @@ async function deployCommands() {
 //  -------------------------
 
 async function displayServerInfo(ip) {
-  const serverInfo = await getServerInfo(ip);
+  const server = await getServerInfo(ip);
 
-  if (serverInfo) {
-    const { playersCount, serverTitle } = serverInfo;
-    const serverT = serverTitle.replace(/[^a-zA-Z]+/g, " ");
-    return { playersCount, serverT };
+  if (server) {
+    const { players, Data: { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } } = server;
+
+    const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
+    return { server, players, playersonline, maxplayers, hostname };
   } else {
     return false;
   }
@@ -93,26 +94,17 @@ async function DaTa(ip) {
 }
 
 const activity = async () => {
-  const { server, players, playersonline, maxplayers, hostname } = await DaTa(IPPP ?? config.URL_SERVER);
-  const { playersCount, serverT } = await displayServerInfo(config.url);
-  console.Console
-  let status;
-  if (config.url) {
-    if (serverT) {
-      status = playersCount > 0 ? `💨 ${playersCount} 🌎 ${serverT}` : "⚠ Wait for Connect";
-    } else {
-      status = "🔴 Offline";
-    }
-  } else {
+    const { server, players, playersonline, maxplayers, hostname } =  config.URL_CFX ? await displayServerInfo(config.URL_CFX) : await DaTa(IPPP ?? config.URL_SERVER);
+    let status;
     if (server) {
-      let namef = players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
+      let namef = config.URL_CFX ? "" : players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
       status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
     } else {
       status = "🔴 Offline";
     }
-  }
-  client.user.setPresence({ activities: [{ name: status }] });
-  if (config.Log_update) console.log(status);
+
+    client.user.setPresence({ activities: [{ name: status }] });
+    if (config.Log_update) console.log(status);
 }
 
 //  -------------------------
