@@ -63,29 +63,11 @@ async function deployCommands() {
 
 //  -------------------------
 
-async function displayServerInfo(ip) {
-  const server = await getServerInfo(ip);
-
-  if (server) {
-    const { players, Data: { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } } = server;
-
-    const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
-    return { server, players, playersonline, maxplayers, hostname };
-  } else {
-    return false;
-  }
-}
-
 async function DaTa(ip) {
-  const Fatch = new ApiFiveM(ip);
-  const server = await Fatch.checkOnlineStatus();
-
+  const fivem = new ApiFiveM(ip);
+  const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
   if (server) {
-    const [players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = await Promise.all([
-      Fatch.getPlayers(),
-      Fatch.getDynamic(),
-    ]);
-
+    const [players, { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext }] = config.URL_CFX ? [server.players, server.Data] : await Promise.all([fivem.getPlayers(), fivem.getDynamic()]);
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
     return { server, players, playersonline, maxplayers, hostname };
   } else {
@@ -94,7 +76,7 @@ async function DaTa(ip) {
 }
 
 const activity = async () => {
-    const { server, players, playersonline, maxplayers, hostname } =  config.URL_CFX ? await displayServerInfo(config.URL_CFX) : await DaTa(IPPP ?? config.URL_SERVER);
+    const { server, players, playersonline, maxplayers, hostname } =  await DaTa(config.URL_CFX ? config.URL_CFX : IPPP ?? config.URL_SERVER);
     let status;
     if (server) {
       let namef = config.URL_CFX ? "" : players.filter((player) => player.name.toLowerCase().includes(Iname ?? config.NAMELIST));
