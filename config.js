@@ -1,5 +1,6 @@
 module.exports = {
     "URL_SERVER": "0.0.0.0:30120",
+    "url": "", // Using cfx.re can only be viewed by online users. "https://cfx.re/join/xxxx" or "" for use URL_SERVER.
     "SERVER_NAME": "Name server",
     "BOT_TOKEN": "",
     "SERVER_LOGO": "https://www.catdumb.com/wp-content/uploads/2022/04/2-75.jpg",
