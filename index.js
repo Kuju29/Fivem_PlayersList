@@ -71,13 +71,11 @@ async function deployCommands() {
 
 //  -------------------------
 
-let cachedData = false;
-
 async function DaTa(ip) {
   const fivem = new ApiFiveM(ip);
   const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
   
-  if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.endpointsEmpty))) {
+  if (server) {
     const [players, dynamic] = await Promise.all([
       config.URL_CFX ? server.Data.players : fivem.getPlayers(),
       config.URL_CFX ? server.Data : fivem.getDynamic()
@@ -85,10 +83,10 @@ async function DaTa(ip) {
     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
 
-    cachedData = { server, players, playersonline, maxplayers, hostname };
+    return { server, players, playersonline, maxplayers, hostname };
+  } else {
+    return { server };
   }
-  
-  return cachedData;
 }
 
 const activity = async () => {
