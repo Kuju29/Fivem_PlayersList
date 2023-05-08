@@ -18,7 +18,7 @@ async function getServerInfo(url) {
   };
   const edit_url = "https://servers-frontend.fivem.net/api/servers/single/" + url.match(/join\/(.+)/)[1];
   const res = await fetch(edit_url, { headers });
-  return res.ok ? await res.json() : false;
+  return res.status >= 200 && res.status < 300 ? await res.json() : false;
 }
 
 class ApiFiveM {
