@@ -53,7 +53,7 @@ function getCheckCFXIP() {
 }
 
 function checkMessage(message) {
-  return message.includes("https://cfx.re/join/");
+  return message.includes("https://cfx.re/join/") || message.includes("cfx.re/join/");
 }
 
 //  -------------------------
@@ -70,6 +70,27 @@ async function deployCommands() {
 }
 
 //  -------------------------
+
+// let cachedData = null;
+
+// async function DaTa(ip) {
+//   const fivem = new ApiFiveM(ip);
+//   const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
+//   if (server && (!config.URL_CFX || (config.URL_CFX && (server.Data.endpointsEmpty) == true))) {
+//     const [players, dynamic] = await Promise.all([
+//       config.URL_CFX ? server.Data.players : fivem.getPlayers(),
+//       config.URL_CFX ? server.Data : fivem.getDynamic()
+//     ]);
+//     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
+//     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
+//     cachedData = { server, players, playersonline, maxplayers, hostname };
+//     return { server, players, playersonline, maxplayers, hostname };
+//   } else if (server == false) {
+//     return { server };
+//   } else {
+//     return cachedData;
+//   }
+// }
 
 async function DaTa(ip) {
   const fivem = new ApiFiveM(ip);
@@ -266,7 +287,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       .catch((err) => console.log(err));
       } else {
         embed.setColor(config.COLORBOX)
-          .addFields([{ name: "**Are you sure the IP is correct?**", value: `\`${text}\`` }])
+          .addFields([{ name: "**Invalid input IP:Port or cfx.re/join/xxxxx**", value: `\`${text}\`` }])
           .setTimestamp();
     
         interaction.reply({ embeds: [embed] });
