@@ -52,6 +52,10 @@ function getCheckCFXIP() {
   return config.URL_CFX ? config.URL_CFX : IPPP ?? config.URL_SERVER;
 }
 
+function checkMessage(message) {
+  return message.includes("https://cfx.re/join/");
+}
+
 //  -------------------------
 
 async function deployCommands() {
@@ -67,34 +71,38 @@ async function deployCommands() {
 
 //  -------------------------
 
+let cachedData = false;
+
 async function DaTa(ip) {
   const fivem = new ApiFiveM(ip);
   const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
-  if (server) {
+  
+  if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.endpointsEmpty))) {
     const [players, dynamic] = await Promise.all([
       config.URL_CFX ? server.Data.players : fivem.getPlayers(),
       config.URL_CFX ? server.Data : fivem.getDynamic()
     ]);
     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
-    return { server, players, playersonline, maxplayers, hostname };
-  } else {
-    return { server };
+
+    cachedData = { server, players, playersonline, maxplayers, hostname };
   }
+  
+  return cachedData;
 }
 
 const activity = async () => {
-    const { server, players, playersonline, maxplayers, hostname } =  await DaTa(getCheckCFXIP());
-    let status;
-    if (server) {
-      let namef = players.filter((player) => player.name.normalize().toLowerCase().includes((Iname ?? config.NAMELIST).normalize().toLowerCase()));
-      status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
-    } else {
-      status = "🔴 Offline";
-    }
+  const { server, players, playersonline, maxplayers, hostname } = await DaTa(getCheckCFXIP());
+  let status;
+  if (server) {
+    let namef = players && players.filter((player) => player.name.normalize().toLowerCase().includes((Iname ?? config.NAMELIST).normalize().toLowerCase()));
+    status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef && namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
+  } else {
+    status = "🔴 Offline";
+  }
 
-    client.user.setPresence({ activities: [{ name: status }] });
-    if (config.Log_update) console.log(status);
+  client.user.setPresence({ activities: [{ name: status }] });
+  if (config.Log_update) console.log(status);
 }
 
 //  -------------------------
@@ -111,7 +119,7 @@ client.on("ready", async () => {
   deployCommands();
 
   const loop = async () => {
-    if (counter >= 20) {
+    if (counter >= 10) {
       if (config.Log_update) console.log("wait 1 min");
       await new Promise((resolve) => setTimeout(resolve, 60000));
       counter = 0;
@@ -204,12 +212,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.log(`${commandName}: completed`);
   }
 
-    if (commandName === "search-ip") {
+    if (commandName === "search-info") {
       const text = interaction.options.data[0].value;
-      const iNfo = new ApiFiveM(text);
       const embed = new EmbedBuilder();
     
       if (validateIpAndPort(text)) {
+        const iNfo = new ApiFiveM(text);
         iNfo.checkOnlineStatus()
           .then(async (server) => {
             const infoplayers = server ? await iNfo.getDynamic() : null;
@@ -222,7 +230,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
             ];
     
             embed.setColor(config.COLORBOX)
-              .setTitle(`Server: \`${text}\``)
+              .setTitle(`search-info: \`${text}\``)
               .addFields(fields)
               .setTimestamp();
     
@@ -230,6 +238,34 @@ client.on(Events.InteractionCreate, async (interaction) => {
             console.log(`${commandName}: ${text} ${server ? "online" : "offline"}`);
           })
           .catch((err) => console.log(err));
+      } else if (checkMessage(text)) {
+        getServerInfo(text).then(async (server) => {
+          console.log(`${commandName}: ${text} ${server}`);
+          const fields = server ? [
+          { name: "**Server Status**", value: `\`\`\`✅Online\`\`\`` },
+          { name: "**Server Name**", value: `\`\`\`${(server.Data.hostname).replace(/[^a-zA-Z]+/g, " ")}\`\`\`` },
+          { name: "**IP**", value: `\`\`\`${server.Data.connectEndPoints}\`\`\`` },
+          { name: "**PORT**", value: `\`\`\`${server.Data.connectEndPoints[0]}\`\`\`` },
+          { name: "**Server Connect**", value: `\`\`\`${text}\`\`\`` },
+          { name: "**Owner Name**", value: `\`\`\`${server.Data.ownerName}\`\`\`` },
+          { name: "**Private**", value: `\`\`\`${server.Data.private}\`\`\`` },
+          { name: "**Languages**", value: `\`\`\`${server.Data.vars.languages}\`\`\`` },
+          { name: "**Last Update**", value: `\`\`\`${server.Data.lastSeen}\`\`\`` },
+          { name: "**Online Players**", value: `\`\`\`${server.Data.clients}/${server.Data.sv_maxclients}\`\`\`` },
+        ] : [
+          { name: "**Server Status**", value: `\`\`\`❌Offline or Invalid IP\`\`\`` },
+          { name: "**Online Players**", value: `\`\`\`-/-\`\`\`` },
+        ];
+
+        embed.setColor(config.COLORBOX)
+          .setTitle(`search-info: \`${text}\``)
+          .addFields(fields)
+          .setTimestamp();
+
+        interaction.reply({ embeds: [embed] });
+        console.log(`${commandName}: ${text} ${server ? "online" : "offline"}`);
+      })
+      .catch((err) => console.log(err));
       } else {
         embed.setColor(config.COLORBOX)
           .addFields([{ name: "**Are you sure the IP is correct?**", value: `\`${text}\`` }])
