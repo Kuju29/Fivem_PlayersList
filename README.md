@@ -1,7 +1,7 @@
 # fivem-bots-discord
 
 ### Note:
-- Using cfx url if your server is updating back end using the same url or ip will cause the server to show both alternately. It happened to me and I'm looking for a solution to this problem.
+- Using `ip` is better than `cfx url` if you don't have ip use `/search-info` input `cfx url` to get ip.
 
 ### Run:
 - Install [Node](https://nodejs.org/en/)
