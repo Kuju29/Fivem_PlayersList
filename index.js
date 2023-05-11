@@ -1,12 +1,13 @@
 const { Client, IntentsBitField, Events, Collection, EmbedBuilder } = require("discord.js");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
 const { Pagination } = require("discordjs-button-embed-pagination");
+const { Routes } = require("discord-api-types/v9");
+const { REST } = require("@discordjs/rest");
 const path = require("node:path");
 const fs = require("node:fs");
 
 const config = require("./config.js");
-const { ApiFiveM, getServerInfo } = require("./server/info.js");
+const { ApiFiveM, Guild } = require("./server/info.js");
+
 const rest = new REST({ version: "10" }).setToken(config.BOT_TOKEN);
 
 const intents = new IntentsBitField();
@@ -28,35 +29,9 @@ console.log = function (data) {
 
 //  -------------------------
 
-function validateIpAndPort(input) {
-  var parts = input.split(":");
-  var ip = parts[0].split(".");
-  var port = parts[1];
-  return ip.length === 4 && ip.every((segment) => validateNum(segment, 0, 255)) && validateNum(port, 1, 65535);
-}
-
-function validateNum(input, min, max) {
-  var num = +input;
-  return num >= min && num <= max && input === num.toString();
-}
-
-function chunkArray(arr, size) {
-  const result = [];
-  while (arr.length) {
-    result.push(arr.splice(0, size));
-  }
-  return result;
-}
-
 function getCheckCFXIP() {
   return config.URL_CFX ? config.URL_CFX : IPPP ?? config.URL_SERVER;
 }
-
-function checkMessage(message) {
-  return message.includes("https://cfx.re/join/") || message.includes("cfx.re/join/");
-}
-
-//  -------------------------
 
 async function deployCommands() {
   const commands = fs.readdirSync("./commands").filter((file) => file.endsWith(".js")).map((file) => require(`./commands/${file}`).data.toJSON());
@@ -71,42 +46,43 @@ async function deployCommands() {
 
 //  -------------------------
 
-// let cachedData = null;
+let cachedData = null;
 
 // async function DaTa(ip) {
-//   const fivem = new ApiFiveM(ip);
-//   const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
-//   if (server && (!config.URL_CFX || (config.URL_CFX && (server.Data.endpointsEmpty) == true))) {
+//   const server = config.URL_CFX ? await new Guild().getServerInfo(ip) : await new ApiFiveM(ip).checkOnlineStatus();
+
+//   if (server == false) {
+//     return { server };
+//   } else if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.endpointsEmpty === true))) {
 //     const [players, dynamic] = await Promise.all([
-//       config.URL_CFX ? server.Data.players : fivem.getPlayers(),
-//       config.URL_CFX ? server.Data : fivem.getDynamic()
+//       config.URL_CFX ? server.Data.players : await new ApiFiveM(ip).getPlayers(),
+//       config.URL_CFX ? server.Data : await new ApiFiveM(ip).getDynamic()
 //     ]);
+
 //     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
 //     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
 //     cachedData = { server, players, playersonline, maxplayers, hostname };
 //     return { server, players, playersonline, maxplayers, hostname };
-//   } else if (server == false) {
-//     return { server };
 //   } else {
 //     return cachedData;
 //   }
 // }
 
 async function DaTa(ip) {
-  const fivem = new ApiFiveM(ip);
-  const server = config.URL_CFX ? await getServerInfo(ip) : await fivem.checkOnlineStatus();
-  
-  if (server) {
+  const server = config.URL_CFX ? await new Guild().getServerInfo(ip) : await new ApiFiveM(ip).checkOnlineStatus();
+  if (server == false) {
+    return { server };
+  } else if (server) {
     const [players, dynamic] = await Promise.all([
-      config.URL_CFX ? server.Data.players : fivem.getPlayers(),
-      config.URL_CFX ? server.Data : fivem.getDynamic()
+      config.URL_CFX ? server.Data.players : await new ApiFiveM(ip).getPlayers(),
+      config.URL_CFX ? server.Data : await new ApiFiveM(ip).getDynamic()
     ]);
     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
-
+    cachedData = { server, players, playersonline, maxplayers, hostname };
     return { server, players, playersonline, maxplayers, hostname };
   } else {
-    return { server };
+    return cachedData;
   }
 }
 
@@ -183,7 +159,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (commandName === "set-ip") {
       const text = interaction.options.data[0].value;
-      if (validateIpAndPort(text)) {
+      if (config.URL_CFX) {
+        const message = await interaction.reply({ content: `You use Cfx url need to set \`"URL_CFX": ""\``, fetchReply: true });
+        message.react("❌");
+        console.log(`${commandName}: You use Cfx url need to set "URL_CFX": ""`);
+      } else if (await new Guild().validateIpAndPort(text)) {
         IPPP = text;
         const message = await interaction.reply({ content: `${commandName}: to ${text}`, fetchReply: true });
         message.react("👌");
@@ -198,20 +178,26 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (commandName === "all") {
       await interaction.deferReply();
       const { players } = await DaTa(getCheckCFXIP());
-      const result = players.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
-  
-      const chunksArr = chunkArray(result, 50);
-      const embeds = chunksArr.map((chunk) => new EmbedBuilder()
+      const result = players && players.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`);
+    
+      const chunksArr = await new Guild().chunkArray(result, 50);
+      
+      if (chunksArr) {
+        const embeds = chunksArr.map((chunk) => new EmbedBuilder()
           .setColor(config.COLORBOX)
           .setTitle(`All_players | ${config.SERVER_NAME}`)
           .setDescription(chunk.join("\n"))
-      );
-  
-      await new Pagination(interaction.channel, embeds, "Part").paginate();
-  
-      await interaction.editReply({ content: 'All players list has been generated.', ephemeral: false });
+        );
+    
+        await new Pagination(interaction.channel, embeds, "Part").paginate();
+        await interaction.editReply({ content: 'All players list has been generated.', ephemeral: false });
+      } else {
+        await interaction.reply({ content: `❌Offline`, fetchReply: true });
+      }
+    
       console.log(`${commandName}: completed`);
-  }
+    }
+    
 
     if (commandName === "search-id") {
       const { players } = await DaTa(getCheckCFXIP());
@@ -235,13 +221,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
       const text = interaction.options.data[0].value;
       const embed = new EmbedBuilder();
     
-      if (validateIpAndPort(text)) {
-        const iNfo = new ApiFiveM(text);
-        iNfo.checkOnlineStatus()
+      if (await new Guild().validateIpAndPort(text)) {
+        await new ApiFiveM(text).checkOnlineStatus()
           .then(async (server) => {
-            const infoplayers = server ? await iNfo.getDynamic() : null;
+            const infoplayers = server ? await new ApiFiveM(text).getDynamic() : null;
+            const iport = await new Guild().ipAddress(text);
             const fields = server ? [
               { name: "**Server Status**", value: `\`\`\`✅Online\`\`\`` },
+              { name: "**Server Name**", value: `\`\`\`${(infoplayers.hostname).replace(/[^a-zA-Z]+/g, " ")}\`\`\`` },
+              { name: "**Languages**", value: `\`\`\`${iport.timezone}\`\`\`` },
               { name: "**Online Players**", value: `\`\`\`${infoplayers.clients}/${infoplayers.sv_maxclients}\`\`\`` },
             ] : [
               { name: "**Server Status**", value: `\`\`\`❌Offline or Invalid IP\`\`\`` },
@@ -257,18 +245,17 @@ client.on(Events.InteractionCreate, async (interaction) => {
             console.log(`${commandName}: ${text} ${server ? "online" : "offline"}`);
           })
           .catch((err) => console.log(err));
-      } else if (checkMessage(text)) {
-        getServerInfo(text).then(async (server) => {
-          console.log(`${commandName}: ${text} ${server}`);
+      } else if (await new Guild().checkMessage(text)) {
+        await new Guild().getServerInfo(text).then(async (server) => {
+          const iport = await new Guild().domainAddress(server.Data.connectEndPoints[0]);
           const fields = server ? [
           { name: "**Server Status**", value: `\`\`\`✅Online\`\`\`` },
           { name: "**Server Name**", value: `\`\`\`${(server.Data.hostname).replace(/[^a-zA-Z]+/g, " ")}\`\`\`` },
-          { name: "**IP**", value: `\`\`\`${server.Data.connectEndPoints}\`\`\`` },
-          { name: "**PORT**", value: `\`\`\`${server.Data.connectEndPoints[0]}\`\`\`` },
+          { name: "**IP:Port**", value: `\`\`\`${iport.status == "success" ? `${iport.query}:${iport.zip}` : server.Data.connectEndPoints}\`\`\`` },
           { name: "**Server Connect**", value: `\`\`\`${text}\`\`\`` },
           { name: "**Owner Name**", value: `\`\`\`${server.Data.ownerName}\`\`\`` },
           { name: "**Private**", value: `\`\`\`${server.Data.private}\`\`\`` },
-          { name: "**Languages**", value: `\`\`\`${server.Data.vars.languages}\`\`\`` },
+          { name: "**Languages**", value: `\`\`\`${iport.timezone}\`\`\`` },
           { name: "**Last Update**", value: `\`\`\`${server.Data.lastSeen}\`\`\`` },
           { name: "**Online Players**", value: `\`\`\`${server.Data.clients}/${server.Data.sv_maxclients}\`\`\`` },
         ] : [
