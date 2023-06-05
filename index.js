@@ -62,7 +62,7 @@ let cachedData = null;
 
 //   if (server == false) {
 //     return { server };
-//   } else if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.mapname === "WHAT CITY"))) {
+//   } else if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.mapname === ""))) {
 //     const [players, dynamic] = await Promise.all([
 //       config.URL_CFX ? server.Data.players : await new ApiFiveM(ip).getPlayers(),
 //       config.URL_CFX ? server.Data : await new ApiFiveM(ip).getDynamic()
