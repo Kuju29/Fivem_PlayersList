@@ -29,6 +29,15 @@ console.log = function (data) {
 
 //  -------------------------
 
+function split_data(data) {
+  const identifiers = {};
+  data.identifiers.forEach(identifier => {
+    const [key, value] = identifier.split(':');
+    identifiers[key] = value;
+  });
+  return identifiers;
+}
+
 function getCheckCFXIP() {
   return config.URL_CFX ? config.URL_CFX : IPPP ?? config.URL_SERVER;
 }
@@ -53,14 +62,14 @@ let cachedData = null;
 
 //   if (server == false) {
 //     return { server };
-//   } else if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.endpointsEmpty === true))) {
+//   } else if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.mapname === "WHAT CITY"))) {
 //     const [players, dynamic] = await Promise.all([
 //       config.URL_CFX ? server.Data.players : await new ApiFiveM(ip).getPlayers(),
 //       config.URL_CFX ? server.Data : await new ApiFiveM(ip).getDynamic()
 //     ]);
 
 //     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
-//     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ").substring(0, 40);
+//     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ").substring(0, 40);;
 //     cachedData = { server, players, playersonline, maxplayers, hostname };
 //     return { server, players, playersonline, maxplayers, hostname };
 //   } else {
@@ -197,7 +206,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
     
       console.log(`${commandName}: completed`);
     }
-    
 
     if (commandName === "search-id") {
       const { players } = await DaTa(getCheckCFXIP());
@@ -205,7 +213,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       const num = text.match(/[0-9]/g).join("").valueOf();
       const playerdata = players.filter(player => player.id == num);
 
-      const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join("\n");
+      const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Discord : ${split_data(player).discord} | Ping : ${player.ping}\n`).join("\n");
       
       const embed = new EmbedBuilder()
           .setColor(config.COLORBOX)
