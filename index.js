@@ -57,26 +57,6 @@ async function deployCommands() {
 
 let cachedData = null;
 
-// async function DaTa(ip) {
-//   const server = config.URL_CFX ? await new Guild().getServerInfo(ip) : await new ApiFiveM(ip).checkOnlineStatus();
-
-//   if (server == false) {
-//     return { server };
-//   } else if (server && (!config.URL_CFX || (config.URL_CFX && server.Data.mapname === ""))) {
-//     const [players, dynamic] = await Promise.all([
-//       config.URL_CFX ? server.Data.players : await new ApiFiveM(ip).getPlayers(),
-//       config.URL_CFX ? server.Data : await new ApiFiveM(ip).getDynamic()
-//     ]);
-
-//     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
-//     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ").substring(0, 40);;
-//     cachedData = { server, players, playersonline, maxplayers, hostname };
-//     return { server, players, playersonline, maxplayers, hostname };
-//   } else {
-//     return cachedData;
-//   }
-// }
-
 async function DaTa(ip) {
   const server = config.URL_CFX ? await new Guild().getServerInfo(ip) : await new ApiFiveM(ip).checkOnlineStatus();
   if (server == false) {
@@ -212,18 +192,27 @@ client.on(Events.InteractionCreate, async (interaction) => {
       const text = interaction.options.data[0].value;
       const num = text.match(/[0-9]/g).join("").valueOf();
       const playerdata = players.filter(player => player.id == num);
-
-      const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Discord : ${split_data(player).discord} | Ping : ${player.ping}\n`).join("\n");
-      
+    
+      const promises = playerdata.map(async player => {
+        const { discord } = split_data(player);
+        const user = await client.users.fetch(discord);
+        const username = user ? user.username : 'Unknown';
+    
+        return `\`\`\`${player.name}\`\`\` \`\`\`ID: ${player.id}\nPing: ${player.ping}\nDiscord:\n  UserID: ${discord}\n  Username: ${username}\`\`\``;
+      });
+    
+      const results = await Promise.all(promises);
+      const result = results.join("\n");
       const embed = new EmbedBuilder()
-          .setColor(config.COLORBOX)
-          .setTitle(`Search player | ${config.SERVER_NAME}`)
-          .setDescription(result.length > 0 ? result : "No Players")
-          .setTimestamp();
-      
-      interaction.reply({ embeds: [embed] });
+        .setColor(config.COLORBOX)
+        .setTitle(`Search player | ${config.SERVER_NAME}`)
+        .setDescription(result.length > 0 ? result : "No Players")
+        .setTimestamp();
+    
+      await interaction.reply({ embeds: [embed] });
       console.log(`${commandName}: completed`);
-  }
+    }
+    
 
     if (commandName === "search-info") {
       const text = interaction.options.data[0].value;
@@ -249,7 +238,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
               .addFields(fields)
               .setTimestamp();
     
-            interaction.reply({ embeds: [embed] });
+            await interaction.reply({ embeds: [embed] });
             console.log(`${commandName}: ${text} ${server ? "online" : "offline"}`);
           })
           .catch((err) => console.log(err));
@@ -276,7 +265,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .addFields(fields)
           .setTimestamp();
 
-        interaction.reply({ embeds: [embed] });
+          await interaction.reply({ embeds: [embed] });
         console.log(`${commandName}: ${text} ${server ? "online" : "offline"}`);
       })
       .catch((err) => console.log(err));
@@ -285,26 +274,26 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .addFields([{ name: "**Invalid input IP:Port or cfx.re/join/xxxxx**", value: `\`${text}\`` }])
           .setTimestamp();
     
-        interaction.reply({ embeds: [embed] });
+          await interaction.reply({ embeds: [embed] });
         console.log(`${commandName}: ${text} incorrect`);
       }
   }
     
-    if (commandName === "search-name") {
-      const { players } = await DaTa(getCheckCFXIP());
-      const text = interaction.options.data[0].value.normalize().toLowerCase();
-      const playerdata = players.filter(person => person.name.normalize().toLowerCase().includes(text));
-      const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Ping : ${player.ping}\n`).join('');
-  
-      const embed = new EmbedBuilder()
-          .setColor(config.COLORBOX)
-          .setTitle(`Search player | ${config.SERVER_NAME}`)
-          .setDescription(result.length > 0 ? result : "No Players")
-          .setTimestamp();
-  
-      interaction.reply({ embeds: [embed] });
-      console.log(`${commandName}: ${text} completed`);
-  }
+  if (commandName === "search-name") {
+    const { players } = await DaTa(getCheckCFXIP());
+    const text = interaction.options.data[0].value.normalize().toLowerCase();
+    const playerdata = players.filter(person => person.name.normalize().toLowerCase().includes(text));
+    const result = playerdata.map((player, index) => `${index + 1}. ${player.name} | ID : ${player.id} | Discord : ${split_data(player).discord} | Ping : ${player.ping}\n`).join('');
+
+    const embed = new EmbedBuilder()
+        .setColor(config.COLORBOX)
+        .setTitle(`Search player | ${config.SERVER_NAME}`)
+        .setDescription(result.length > 0 ? result : "No Players")
+        .setTimestamp();
+
+    interaction.reply({ embeds: [embed] });
+    console.log(`${commandName}: ${text} completed`);
+}
     
   } catch (error) {
     console.error(error);
