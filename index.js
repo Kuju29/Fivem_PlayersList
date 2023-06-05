@@ -247,7 +247,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .catch((err) => console.log(err));
       } else if (await new Guild().checkMessage(text)) {
         await new Guild().getServerInfo(text).then(async (server) => {
-          const iport = await new Guild().domainAddress(server.Data.connectEndPoints[0]);
+          const iport = await new Guild().domainAddress(server.Data.connectEndPoints);
           const fields = server ? [
           { name: "**Server Status**", value: `\`\`\`✅Online\`\`\`` },
           { name: "**Server Name**", value: `\`\`\`${(server.Data.hostname).replace(/[^a-zA-Z]+/g, " ")}\`\`\`` },
