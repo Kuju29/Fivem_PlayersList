@@ -60,7 +60,7 @@ let cachedData = null;
 //     ]);
 
 //     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
-//     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
+//     const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ").substring(0, 20);
 //     cachedData = { server, players, playersonline, maxplayers, hostname };
 //     return { server, players, playersonline, maxplayers, hostname };
 //   } else {
@@ -78,7 +78,7 @@ async function DaTa(ip) {
       config.URL_CFX ? server.Data : await new ApiFiveM(ip).getDynamic()
     ]);
     const { clients: playersonline, sv_maxclients: maxplayers, hostname: hostnametext } = dynamic;
-    const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ");
+    const hostname = hostnametext.replace(/[^a-zA-Z]+/g, " ").substring(0, 20);
     cachedData = { server, players, playersonline, maxplayers, hostname };
     return { server, players, playersonline, maxplayers, hostname };
   } else {
