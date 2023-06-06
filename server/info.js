@@ -47,10 +47,16 @@ class Guild {
   }
 
   async domainAddress(url) {
-    const parsedUrl = new URL(url);
-    const domain = parsedUrl.hostname;
-    const res = await fetch(`http://ip-api.com/json/${domain}`);
-    return res.ok ? await res.json() : null;
+    let parsedUrl;
+    
+    if (/^(?:\d{1,3}\.){3}\d{1,3}:\d+$/.test(url)) {
+      return url
+    } else {
+      parsedUrl = new URL(url);
+      const domain = parsedUrl.hostname;
+      const res = await fetch(`http://ip-api.com/json/${domain}`);
+      return res.ok ? await res.json() : null;
+    }
   }
 
   async ipAddress(ip) {
