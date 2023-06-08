@@ -47,11 +47,15 @@ class Guild {
   }
 
   async domainAddress(url) {
-    const parsedUrl = new URL(url);
-    const domain = parsedUrl.hostname;
-    const res = await fetch(`http://ip-api.com/json/${domain}`);
-    return res.ok ? await res.json() : null;
-  }
+    if (/^(?:\d{1,3}\.){3}\d{1,3}:\d+$/.test(url)) {
+      return url;
+    } else {
+      const parsedUrl = new URL(url);
+      const domain = parsedUrl.hostname;
+      const res = await fetch(`http://ip-api.com/json/${domain}`);
+      return res.ok ? await res.json() : null;
+    }
+  }  
 
   async ipAddress(ip) {
     const parts = ip.split(':')[0];
@@ -64,6 +68,11 @@ class Guild {
     var ip = parts[0].split(".");
     var port = parts[1];
     return ip.length === 4 && ip.every((segment) => this.validateNum(segment, 0, 255)) && this.validateNum(port, 1, 65535);
+  }
+
+  async get_icon(nameserver, keyicon) {
+    const icon =  `https://servers-live.fivem.net/servers/icon/${nameserver}/${keyicon}.png`
+    return icon
   }
   
   async validateNum(input, min, max) {
