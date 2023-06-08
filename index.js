@@ -245,16 +245,17 @@ client.on(Events.InteractionCreate, async (interaction) => {
       } else if (await new Guild().checkMessage(text)) {
         await new Guild().getServerInfo(text).then(async (server) => {
           const iport = await new Guild().domainAddress(server.Data.connectEndPoints);
+          const icon = await new Guild().get_icon(server.EndPoint, server.Data.iconVersion)
           const fields = server ? [
           { name: "**Server Status**", value: `\`\`\`✅Online\`\`\`` },
-          { name: "**Server Name**", value: `\`\`\`${(server.Data.hostname).replace(/[^a-zA-Z]+/g, " ")}\`\`\`` },
+          { name: "**Server Name**", value: `\`\`\`${(server.Data.vars.sv_projectName).replace(/[^a-zA-Z]+/g, " ")}\`\`\`` },
           { name: "**IP:Port**", value: `\`\`\`${iport.status == "success" ? `${iport.query}:${iport.zip}` : server.Data.connectEndPoints}\`\`\`` },
-          { name: "**Server Connect**", value: `\`\`\`${text}\`\`\`` },
-          { name: "**Owner Name**", value: `\`\`\`${server.Data.ownerName}\`\`\`` },
+          { name: "**Owner Name**", value: `[${server.Data.ownerName}](${server.Data.ownerProfile})` },
+          { name: "**Server Connect**", value: `https://cfx.re/join/${server.EndPoint}` },
           { name: "**Private**", value: `\`\`\`${server.Data.private}\`\`\`` },
+          { name: "**Online Players**", value: `\`\`\`${server.Data.clients} / ${server.Data.sv_maxclients}\`\`\`` },
           { name: "**Languages**", value: `\`\`\`${iport.timezone}\`\`\`` },
           { name: "**Last Update**", value: `\`\`\`${server.Data.lastSeen}\`\`\`` },
-          { name: "**Online Players**", value: `\`\`\`${server.Data.clients}/${server.Data.sv_maxclients}\`\`\`` },
         ] : [
           { name: "**Server Status**", value: `\`\`\`❌Offline or Invalid IP\`\`\`` },
           { name: "**Online Players**", value: `\`\`\`-/-\`\`\`` },
@@ -262,8 +263,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         embed.setColor(config.COLORBOX)
           .setTitle(`search-info: \`${text}\``)
+          .setThumbnail(icon)
           .addFields(fields)
-          .setTimestamp();
+          .setTimestamp()
+          .setFooter({ text: server.Data.server, iconURL: icon });
 
           await interaction.reply({ embeds: [embed] });
         console.log(`${commandName}: ${text} ${server ? "online" : "offline"}`);
