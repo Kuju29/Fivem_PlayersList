@@ -75,9 +75,12 @@ async function DaTa(ip) {
   }
 }
 
+let currentStatus = "";
+
 const activity = async () => {
   const { server, players, playersonline, maxplayers, hostname } = await DaTa(getCheckCFXIP());
   let status;
+
   if (server) {
     let namef = players && players.filter((player) => player.name.normalize().toLowerCase().includes((Iname ?? config.NAMELIST).normalize().toLowerCase()));
     status = playersonline > 0 ? `💨 ${playersonline}/${maxplayers} ${namef && namef.length ? `👮‍ ${namef.length} ` : ""}🌎 ${hostname}` : "⚠ Wait for Connect";
@@ -85,8 +88,11 @@ const activity = async () => {
     status = "🔴 Offline";
   }
 
-  client.user.setPresence({ activities: [{ name: status }] });
-  if (config.Log_update) console.log(status);
+  if (status !== currentStatus) {
+    client.user.setPresence({ activities: [{ name: status }] });
+    currentStatus = status;
+    if (config.Log_update) console.log(status);
+  }
 }
 
 //  -------------------------
